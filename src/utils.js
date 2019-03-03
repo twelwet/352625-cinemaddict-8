@@ -13,11 +13,15 @@ const render = (data, template, container) => {
   container.appendChild(createFragment(data, template));
 };
 
-const getRandomInteger = (min, max) => {
+const getRandomFloating = (min, max) => {
   let rand = min - 0.5 + Math.random() * (max - min + 1);
+  return rand;
+};
+
+const getRandomInteger = (min, max) => {
+  let rand = getRandomFloating(min, max);
   rand = Math.round(rand);
   return rand;
 };
 
-
-export {render, getRandomInteger};
+export {render, getRandomFloating, getRandomInteger};
