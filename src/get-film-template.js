@@ -24,4 +24,4 @@ const getFilmTemplate = (data) => {
   return template;
 };
 
-export {getFilmTemplate};
+export default getFilmTemplate;
