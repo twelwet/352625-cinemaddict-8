@@ -80,12 +80,12 @@ const getRandomIndex = (array) => {
   return getRandomInteger(0, array.length - 1);
 };
 
-const getOneRandomValue = (array) => array[getRandomInteger(0, (array.length - 1))];
-
-const getRandomTitle = (titles) => getOneRandomValue(titles);
+const getOneRandomValue = (array) => array[getRandomIndex(array)];
 
 const getSomePhrases = (text, min, max) => {
   const mockPhrases = text.split(`. `);
+  // Если объявляю `const randomPhrases = ...`, то консоль браузера ругается
+  // `Uncaught TypeError: Assignment to constant variable.`
   let randomPhrases = [...(new Array(getRandomInteger(min, max)))];
   randomPhrases = randomPhrases.map((it) => {
     it = mockPhrases.splice(getRandomIndex(mockPhrases), 1).toString();
@@ -96,24 +96,18 @@ const getSomePhrases = (text, min, max) => {
 
 const getRandomRating = (min, max) => getRandomFloating(min, max).toFixed(1);
 
-const getRandomYear = (min, max) => getRandomInteger(min, max);
-
-const getRandomGenre = (genres) => getOneRandomValue(genres);
-
-const getRandomPoster = (posters) => getOneRandomValue(posters);
-
 const createFilm = () => {
   const film = {
-    title: getRandomTitle(TITLES),
+    title: getOneRandomValue(TITLES),
     description: getSomePhrases(DESCRIPTION, 1, 3),
     rating: getRandomRating(1.9, 9.2),
-    year: getRandomYear(1901, 2018),
+    year: getRandomInteger(1901, 2018),
     duration: {
       hours: getRandomInteger(1, 3),
       min: getRandomInteger(0, 59)
     },
-    genre: getRandomGenre(GENRES),
-    poster: `./images/posters/${getRandomPoster(POSTERS)}`,
+    genre: getOneRandomValue(GENRES),
+    poster: `./images/posters/${getOneRandomValue(POSTERS)}`,
     comments: getRandomInteger(1, 1000),
     extra: false
   };
@@ -127,16 +121,18 @@ const createExtraFilm = () => {
 };
 
 const createFilms = (cb, min, max) => {
+  // Если объявляю `const films = ...`, то консоль браузера ругается
+  // `Uncaught TypeError: Assignment to constant variable.`
   let films = [...(new Array(getRandomInteger(min, max)))];
   films = films.map(cb);
   return films;
 };
 
 // Имитация загрузки данных с сервера
-// ---
-const films = createFilms(createFilm, 1, 10);
-const topRatedFilms = createFilms(createExtraFilm, 1, 3);
-const mostCommentedFilms = createFilms(createExtraFilm, 1, 5);
-// ---
+const films = {
+  all: createFilms(createFilm, 1, 10),
+  topRated: createFilms(createExtraFilm, 1, 3),
+  mostCommented: createFilms(createExtraFilm, 1, 5)
+};
 
-export {filters, createFilm, createFilms, films, topRatedFilms, mostCommentedFilms};
+export {filters, createFilm, createFilms, films};
