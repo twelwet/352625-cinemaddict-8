@@ -13,4 +13,4 @@ const getFilterTemplate = (data) => {
   return template;
 };
 
-export {getFilterTemplate};
+export default getFilterTemplate;

@@ -13,11 +13,16 @@ const render = (data, template, container) => {
   container.appendChild(createFragment(data, template));
 };
 
+const getRandomFloating = (min, max) => {
+  return (min - 0.5 + Math.random() * (max - min + 1));
+};
+
 const getRandomInteger = (min, max) => {
-  let rand = min - 0.5 + Math.random() * (max - min + 1);
+  // Если объявляю `const rand = ...`, то консоль браузера ругается
+  // `Uncaught TypeError: Assignment to constant variable.`
+  let rand = getRandomFloating(min, max);
   rand = Math.round(rand);
   return rand;
 };
 
-
-export {render, getRandomInteger};
+export {render, getRandomFloating, getRandomInteger};
