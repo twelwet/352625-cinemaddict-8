@@ -128,11 +128,13 @@ const createFilms = (cb, min, max) => {
   return films;
 };
 
-// Имитация загрузки данных с сервера
 const films = {
   all: createFilms(createFilm, 1, 10),
   topRated: createFilms(createExtraFilm, 1, 3),
   mostCommented: createFilms(createExtraFilm, 1, 5)
 };
 
-export {filters, createFilm, createFilms, films};
+// Имитация загрузки данных с сервера
+const downloaded = {filters, films, createFilm, createFilms};
+
+export default downloaded;
