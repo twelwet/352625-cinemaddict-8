@@ -1,9 +1,10 @@
 // film-details.js
 
-import {createElement} from './utils.js';
+import Component from './component.js';
 
-class FilmDetails {
+class FilmDetails extends Component {
   constructor(data) {
+    super();
     this._title = data.title;
     this._description = data.description;
     this._rating = data.rating;
@@ -12,8 +13,6 @@ class FilmDetails {
     this._genre = data.genre;
     this._poster = data.poster;
     this._comments = data.comments;
-
-    this._element = null;
 
     this._onClose = null;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
@@ -27,10 +26,6 @@ class FilmDetails {
     if (typeof this._onClose === `function`) {
       this._onClose();
     }
-  }
-
-  get element() {
-    return this._element;
   }
 
   get template() {
@@ -206,18 +201,6 @@ class FilmDetails {
   unbind() {
     this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClick);
   }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
-  }
-
 }
 
 export default FilmDetails;
