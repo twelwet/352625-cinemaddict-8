@@ -1,9 +1,10 @@
 // film.js
 
-import {createElement} from './utils.js';
+import Component from './component.js';
 
-class Film {
+class Film extends Component {
   constructor(data) {
+    super();
     this._title = data.title;
     this._description = data.description;
     this._rating = data.rating;
@@ -14,11 +15,8 @@ class Film {
     this._comments = data.comments;
     this._extra = data.extra;
 
-    this._element = null;
-
     this._onComments = null;
     this._onCommentsButtonClick = this._onCommentsButtonClick.bind(this);
-
   }
 
   set onComments(fn) {
@@ -29,10 +27,6 @@ class Film {
     if (typeof this._onComments === `function`) {
       this._onComments();
     }
-  }
-
-  get element() {
-    return this._element;
   }
 
   get template() {
@@ -63,17 +57,6 @@ class Film {
 
   unbind() {
     this._element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onCommentsButtonClick);
-  }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
 }
 

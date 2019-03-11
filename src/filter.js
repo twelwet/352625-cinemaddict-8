@@ -1,17 +1,16 @@
 // filter.js
 
-import {createElement} from './utils.js';
+import Component from './component.js';
 
-class Filter {
+class Filter extends Component {
   constructor(data) {
+    super();
     this._name = data.name;
     this._link = data.link;
     this._active = data.active;
     this._isStats = data.isStats;
     this._isCount = data.isCount;
     this._count = data.count;
-
-    this._element = null;
   }
 
   get template() {
@@ -23,25 +22,6 @@ class Filter {
         <span ${this._isCount ? `class="main-navigation__item-count"` : ``}>${this._count}</span>
       </a>
     `.trim();
-  }
-
-  bind() {
-    // Добавление обработчиков
-  }
-
-  unbind() {
-    // Удаление обработчиков
-  }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
 }
 
