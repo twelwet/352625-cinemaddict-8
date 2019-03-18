@@ -7,12 +7,23 @@ class FilmDetails extends Component {
     super();
     this._title = data.title;
     this._description = data.description;
+
+    this._director = data.director;
+    this._writer = data.writer;
+    this._actors = data.actors;
+
     this._rating = data.rating;
+
     this._year = data.year;
+    this._country = data.country;
     this._duration = data.duration;
-    this._genre = data.genre;
+
+    this._genres = data.genres;
     this._poster = data.poster;
     this._comments = data.comments;
+    this._yourComment = data.yourComment;
+
+    this._extra = data.extra;
 
     this._onClose = null;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
@@ -22,10 +33,25 @@ class FilmDetails extends Component {
     this._onClose = fn;
   }
 
-  _onCloseButtonClick() {
-    if (typeof this._onClose === `function`) {
-      this._onClose();
+  // [Вопрос] Метод работает, но linter ругается: `Expected to return a value at the end of method`
+  _getUserRating() {
+    for (let key of Object.keys(this._rating.user)) {
+      if (this._rating.user[key]) {
+        return key;
+      }
     }
+  }
+
+  _onCloseButtonClick() {
+
+    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
+    const newData = FilmDetails.processForm(formData);
+
+    if (typeof this._onClose === `function`) {
+      this._onClose(newData);
+    }
+
+    this.update(newData);
   }
 
   get template() {
@@ -39,7 +65,7 @@ class FilmDetails extends Component {
           <div class="film-details__poster">
             <img class="film-details__poster-img" src="${this._poster}" alt="${this._title}">
 
-            <p class="film-details__age">18+</p>
+            <p class="film-details__age">${this._rating.age}</p>
           </div>
 
           <div class="film-details__info">
@@ -50,27 +76,29 @@ class FilmDetails extends Component {
               </div>
 
               <div class="film-details__rating">
-                <p class="film-details__total-rating">${this._rating}</p>
-                <p class="film-details__user-rating">Your rate 8</p>
+                <p class="film-details__total-rating">${this._rating.total}</p>
+                <p class="film-details__user-rating">Your rate ${this._getUserRating()}</p>
               </div>
             </div>
 
             <table class="film-details__table">
               <tr class="film-details__row">
                 <td class="film-details__term">Director</td>
-                <td class="film-details__cell">Brad Bird</td>
+                <td class="film-details__cell">${this._director}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">Brad Bird</td>
+                <td class="film-details__cell">${this._writer}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">Samuel L. Jackson, Catherine Keener, Sophia Bush</td>
+                <td class="film-details__cell">
+                ${(Array.from(this._actors).map((actor) => actor.trim())).join(`, `)}
+                </td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${this._year} (USA)</td>
+                <td class="film-details__cell">${this._year} (${this._country})</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
@@ -78,14 +106,13 @@ class FilmDetails extends Component {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
-                <td class="film-details__cell">USA</td>
+                <td class="film-details__cell">${this._country}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Genres</td>
                 <td class="film-details__cell">
-                ${(Array.from(this._genre).map((genre) => (`
-                  <span class="film-details__genre">${genre}</span>
-                  `.trim()))).join(``)}
+                ${(Array.from(this._genres.all).map((genre) => (`
+                  <span class="film-details__genre">${genre}</span>`.trim()))).join(``)}
               </tr>
             </table>
 
@@ -105,19 +132,21 @@ class FilmDetails extends Component {
         </section>
 
         <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${this._comments}</span></h3>
+          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${this._comments.length}</span></h3>
 
           <ul class="film-details__comments-list">
-            <li class="film-details__comment">
-              <span class="film-details__comment-emoji">😴</span>
-              <div>
-                <p class="film-details__comment-text">So long-long story, boring!</p>
-                <p class="film-details__comment-info">
-                  <span class="film-details__comment-author">Tim Macoveev</span>
-                  <span class="film-details__comment-day">3 days ago</span>
-                </p>
-              </div>
-            </li>
+            ${(Array.from(this._comments).map((comment) => (`
+              <li class="film-details__comment">
+                <span class="film-details__comment-emoji">${comment.emoji}</span>
+                <div>
+                  <p class="film-details__comment-text">${comment.text}</p>
+                  <p class="film-details__comment-info">
+                    <span class="film-details__comment-author">${comment.author}</span>
+                    <span class="film-details__comment-day">${comment.date} days ago</span>
+                  </p>
+                </div>
+              </li>
+              `.trim()))).join(``)}
           </ul>
 
           <div class="film-details__new-comment">
@@ -137,7 +166,7 @@ class FilmDetails extends Component {
               </div>
             </div>
             <label class="film-details__comment-label">
-              <textarea class="film-details__comment-input" placeholder="← Select reaction, add comment here" name="comment"></textarea>
+              <textarea class="film-details__comment-input" placeholder="← Select reaction, add comment here" name="comment">${this._yourComment}</textarea>
             </label>
           </div>
         </section>
@@ -159,33 +188,10 @@ class FilmDetails extends Component {
               <p class="film-details__user-rating-feelings">How you feel it?</p>
 
               <div class="film-details__user-rating-score">
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="1" id="rating-1">
-                <label class="film-details__user-rating-label" for="rating-1">1</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="2" id="rating-2">
-                <label class="film-details__user-rating-label" for="rating-2">2</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="3" id="rating-3">
-                <label class="film-details__user-rating-label" for="rating-3">3</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4">
-                <label class="film-details__user-rating-label" for="rating-4">4</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5" checked>
-                <label class="film-details__user-rating-label" for="rating-5">5</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6">
-                <label class="film-details__user-rating-label" for="rating-6">6</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="7" id="rating-7">
-                <label class="film-details__user-rating-label" for="rating-7">7</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="8" id="rating-8">
-                <label class="film-details__user-rating-label" for="rating-8">8</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="9" id="rating-9">
-                <label class="film-details__user-rating-label" for="rating-9">9</label>
-
+              ${(Array.from(Object.keys(this._rating.user)).map((key) => (`
+                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${key}" id="rating-${key}" ${this._rating.user[key] ? `checked` : ``}>
+                <label class="film-details__user-rating-label" for="rating-${key}">${key}</label>
+                `.trim()))).join(``)}
               </div>
             </section>
           </div>
@@ -200,6 +206,53 @@ class FilmDetails extends Component {
 
   unbind() {
     this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClick);
+  }
+
+  update(data) {
+    this._rating.user = data.rating.user;
+    this._yourComment = data.yourComment;
+  }
+
+  static processForm(formData) {
+    const entry = {
+      rating: {
+        user: {
+          1: false,
+          2: false,
+          3: false,
+          4: false,
+          5: false,
+          6: false,
+          7: false,
+          8: false,
+          9: false
+        }
+      },
+      yourComment: ``
+    };
+
+    const filmDetailsMapper = FilmDetails.createMapper(entry);
+
+    for (const pair of formData.entries()) {
+      const [property, value] = pair;
+
+      if (filmDetailsMapper[property]) {
+        filmDetailsMapper[property](value);
+      }
+    }
+
+    return entry;
+  }
+
+  static createMapper(target) {
+    return {
+      score: (value) => {
+        target.rating.user[value] = true;
+      },
+      comment: (value) => {
+        target.yourComment = value;
+      }
+    };
   }
 }
 

@@ -67,6 +67,10 @@ const DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr
 
 const GENRES = [`Comedy`, `Fantasy`, `Horror`, `Adventure`, `Action`, `Thriller`, `Drama`, `Mystery`, `Crime`, `Animation`];
 
+const COUNTRIES = [`USA`, `Canada`, `France`, `Finland`, `Hungary`, `Poland`, `Russia`, `Germany`, `Indonesia`];
+
+const AGE_RATINGS = [8, 10, 12, 14, 16, 17, 18];
+
 const POSTERS = [
   `accused.jpg`,
   `blackmail.jpg`,
@@ -76,16 +80,118 @@ const POSTERS = [
   `three-friends.jpg`,
 ];
 
+const DIRECTORS = [
+  `David Lynch`,
+  `Martin Scorsese`,
+  `Joel and Ethan Coen`,
+  `Steven Soderbergh`,
+  `Terrence Malick`,
+  `Abbas Kiarostami`,
+  `Hayao Miyazaki`
+];
+
+const WRITERS = [
+  `Josh Safdie`,
+  `John Trengove`,
+  `Guillermo Del Toro`,
+  `Mark Boal`,
+  `Ildikò Enyedi`,
+  `Alejandro G. Iñárritu`,
+  `Joanne Rowling`,
+];
+
+const ACTORS = [
+  `Danny Trejo`,
+  `Amy Adams`,
+  `Christopher Lee`,
+  `Keira Knightley`,
+  `David Carradine`,
+  `Ellen Page`,
+  `Ron Perlman`,
+  `Jennifer Lawrence`,
+  `Dennis Hopper`,
+  `Uma Thurman`,
+  `Dolph Lundgren`,
+  `Emma Stone`,
+  `Russell Crowe`,
+  `Naomi Watts`,
+  `Wesley Snipes`
+];
+
+const COMMENTS = {
+  EMOJI: new Map([
+    [`sleeping`, `😴`],
+    [`neutral-face`, `😐`],
+    [`grinning`, `😀`]
+  ]),
+  AUTHORS: [
+    `Roger Smith`,
+    `rom mlol`,
+    `Nadda Mercernary`,
+    `Terrible Gaming`,
+    `JohnTheBun`,
+    `Megumin Kyushikyushi`,
+    `Ruben Haak`,
+    `Calico Jack`
+  ],
+  TEXT: [
+    `So long-long story, boring!`,
+    `Now would be an excellent time for weed`,
+    `But what if my sandwich is a galaxy`,
+    `Oh shiz they are becoming self aware`,
+    `Should've taken the blue pill...`,
+    `This video will kill someone's consciousness one day...`,
+    `Why did this video help me more with my depression than actual therapy?`,
+    `Our reality has been tricked into thinking that this universe is larger than we think.`
+  ]
+};
+
 const getRandomIndex = (array) => {
   return getRandomInteger(0, array.length - 1);
 };
 
 const getOneRandomValue = (array) => array[getRandomIndex(array)];
 
+const getRandomArr = (array, min, max) => {
+  const mySet = new Set();
+  const count = getRandomInteger(min, max);
+
+  do {
+    mySet.add(array[getRandomIndex(array)]);
+  } while (mySet.size < count);
+
+  return [...mySet];
+};
+
+const actors = getRandomArr(ACTORS, 3, 6);
+const genres = getRandomArr(GENRES, 2, 4);
+
+const getCommentContent = () => {
+  return {
+    author: COMMENTS.AUTHORS[getRandomIndex(COMMENTS.AUTHORS)],
+    text: COMMENTS.TEXT[getRandomIndex(COMMENTS.TEXT)],
+    emoji: COMMENTS.EMOJI.get(
+        getOneRandomValue(
+            [...COMMENTS.EMOJI.keys()]
+        )
+    ),
+    date: getRandomInteger(1, 30)
+  };
+};
+
+const getComments = (min = 1, max = 6) => {
+  const count = getRandomInteger(min, max);
+  let comments = [];
+  do {
+    comments.push(getCommentContent());
+  } while (comments.length < count);
+  return comments;
+};
+
+const comments = getComments();
+
 const getSomePhrases = (text, min, max) => {
   const mockPhrases = text.split(`. `);
-  // Если объявляю `const randomPhrases = ...`, то консоль браузера ругается
-  // `Uncaught TypeError: Assignment to constant variable.`
   let randomPhrases = [...(new Array(getRandomInteger(min, max)))];
   randomPhrases = randomPhrases.map((it) => {
     it = mockPhrases.splice(getRandomIndex(mockPhrases), 1).toString();
@@ -100,17 +206,45 @@ const createFilm = () => {
   const film = {
     title: getOneRandomValue(TITLES),
     description: getSomePhrases(DESCRIPTION, 1, 3),
-    rating: getRandomRating(1.9, 9.2),
+
+    director: getOneRandomValue(DIRECTORS),
+    writer: getOneRandomValue(WRITERS),
+    actors,
+
+    rating: {
+      total: getRandomRating(1.9, 9.2),
+      user: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false,
+        6: true,
+        7: false,
+        8: false,
+        9: false
+      },
+      age: `${getOneRandomValue(AGE_RATINGS)}+`
+    },
+
     year: getRandomInteger(1901, 2018),
+    country: getOneRandomValue(COUNTRIES),
     duration: {
       hours: getRandomInteger(1, 3),
       min: getRandomInteger(0, 59)
     },
-    genre: getOneRandomValue(GENRES),
+
+    genres: {
+      all: genres,
+      main: genres[0]
+    },
+
     poster: `./images/posters/${getOneRandomValue(POSTERS)}`,
-    comments: getRandomInteger(1, 1000),
+    comments,
+    yourComment: ``,
     extra: false
   };
+
   return film;
 };
 
@@ -121,8 +255,6 @@ const createExtraFilm = () => {
 };
 
 const createFilms = (cb, min, max) => {
-  // Если объявляю `const films = ...`, то консоль браузера ругается
-  // `Uncaught TypeError: Assignment to constant variable.`
   let films = [...(new Array(getRandomInteger(min, max)))];
   films = films.map(cb);
   return films;
