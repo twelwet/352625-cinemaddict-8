@@ -1,6 +1,19 @@
 // film-details.js
 
 import Component from './component.js';
+import moment from 'moment';
+
+const USER_RATING = {
+  1: false,
+  2: false,
+  3: false,
+  4: false,
+  5: false,
+  6: false,
+  7: false,
+  8: false,
+  9: false
+};
 
 class FilmDetails extends Component {
   constructor(data) {
@@ -14,7 +27,7 @@ class FilmDetails extends Component {
 
     this._rating = data.rating;
 
-    this._year = data.year;
+    this._date = data.date;
     this._country = data.country;
     this._duration = data.duration;
 
@@ -31,15 +44,6 @@ class FilmDetails extends Component {
 
   set onClose(fn) {
     this._onClose = fn;
-  }
-
-  // [Вопрос] Метод работает, но linter ругается: `Expected to return a value at the end of method`
-  _getUserRating() {
-    for (let key of Object.keys(this._rating.user)) {
-      if (this._rating.user[key]) {
-        return key;
-      }
-    }
   }
 
   _onCloseButtonClick() {
@@ -77,7 +81,7 @@ class FilmDetails extends Component {
 
               <div class="film-details__rating">
                 <p class="film-details__total-rating">${this._rating.total}</p>
-                <p class="film-details__user-rating">Your rate ${this._getUserRating()}</p>
+                <p class="film-details__user-rating">Your rate ${this._rating.user}</p>
               </div>
             </div>
 
@@ -98,11 +102,11 @@ class FilmDetails extends Component {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${this._year} (${this._country})</td>
+                <td class="film-details__cell">${moment(this._date).format(`D MMMM YYYY`)} (${this._country})</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${60 * (this._duration.hours) + this._duration.min} min</td>
+                <td class="film-details__cell">${moment.duration({h: this._duration.hours, m: this._duration.min}).asMinutes()} min</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -142,7 +146,7 @@ class FilmDetails extends Component {
                   <p class="film-details__comment-text">${comment.text}</p>
                   <p class="film-details__comment-info">
                     <span class="film-details__comment-author">${comment.author}</span>
-                    <span class="film-details__comment-day">${comment.date} days ago</span>
+                    <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
                   </p>
                 </div>
               </li>
@@ -188,8 +192,8 @@ class FilmDetails extends Component {
               <p class="film-details__user-rating-feelings">How you feel it?</p>
 
               <div class="film-details__user-rating-score">
-              ${(Array.from(Object.keys(this._rating.user)).map((key) => (`
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${key}" id="rating-${key}" ${this._rating.user[key] ? `checked` : ``}>
+              ${(Array.from(Object.keys(USER_RATING)).map((key) => (`
+                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${key}" id="rating-${key}" ${this._rating.user === parseInt(key, 10) ? `checked` : ``}>
                 <label class="film-details__user-rating-label" for="rating-${key}">${key}</label>
                 `.trim()))).join(``)}
               </div>
@@ -209,24 +213,14 @@ class FilmDetails extends Component {
   }
 
   update(data) {
-    this._rating.user = data.rating.user;
+    this._rating.user = parseInt(data.rating.user, 10);
     this._yourComment = data.yourComment;
   }
 
   static processForm(formData) {
     const entry = {
       rating: {
-        user: {
-          1: false,
-          2: false,
-          3: false,
-          4: false,
-          5: false,
-          6: false,
-          7: false,
-          8: false,
-          9: false
-        }
+        user: ``
       },
       yourComment: ``
     };
@@ -247,7 +241,7 @@ class FilmDetails extends Component {
   static createMapper(target) {
     return {
       score: (value) => {
-        target.rating.user[value] = true;
+        target.rating.user = value;
       },
       comment: (value) => {
         target.yourComment = value;

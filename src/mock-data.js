@@ -71,6 +71,9 @@ const COUNTRIES = [`USA`, `Canada`, `France`, `Finland`, `Hungary`, `Poland`, `R
 
 const AGE_RATINGS = [8, 10, 12, 14, 16, 17, 18];
 
+const ONE_HUNDRED_YEARS_AGO = -3155692600000; // ms
+const ONE_YEAR_AGO = -31556926000; // ms
+
 const POSTERS = [
   `accused.jpg`,
   `blackmail.jpg`,
@@ -166,6 +169,8 @@ const getRandomArr = (array, min, max) => {
 const actors = getRandomArr(ACTORS, 3, 6);
 const genres = getRandomArr(GENRES, 2, 4);
 
+const getRandomDate = (min, max) => new Date(Date.now() + getRandomInteger(min, max));
+
 const getCommentContent = () => {
   return {
     author: COMMENTS.AUTHORS[getRandomIndex(COMMENTS.AUTHORS)],
@@ -175,13 +180,13 @@ const getCommentContent = () => {
             [...COMMENTS.EMOJI.keys()]
         )
     ),
-    date: getRandomInteger(1, 30)
+    date: getRandomDate(0, ONE_YEAR_AGO)
   };
 };
 
 const getComments = (min = 1, max = 6) => {
   const count = getRandomInteger(min, max);
-  let comments = [];
+  const comments = [];
   do {
     comments.push(getCommentContent());
   } while (comments.length < count);
@@ -213,21 +218,11 @@ const createFilm = () => {
 
     rating: {
       total: getRandomRating(1.9, 9.2),
-      user: {
-        1: false,
-        2: false,
-        3: false,
-        4: false,
-        5: false,
-        6: true,
-        7: false,
-        8: false,
-        9: false
-      },
+      user: getRandomInteger(1, 9),
       age: `${getOneRandomValue(AGE_RATINGS)}+`
     },
 
-    year: getRandomInteger(1901, 2018),
+    date: getRandomDate(0, ONE_HUNDRED_YEARS_AGO),
     country: getOneRandomValue(COUNTRIES),
     duration: {
       hours: getRandomInteger(1, 3),
