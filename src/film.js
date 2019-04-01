@@ -24,12 +24,6 @@ class Film extends Component {
     this._onComments = fn;
   }
 
-  _onCommentsButtonClick() {
-    if (typeof this._onComments === `function`) {
-      this._onComments();
-    }
-  }
-
   get template() {
     return `
     <article class="film-card ${this._extra ? `film-card--no-controls` : ``}">
@@ -58,6 +52,12 @@ class Film extends Component {
 
   unbind() {
     this._element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onCommentsButtonClick);
+  }
+
+  _onCommentsButtonClick() {
+    if (typeof this._onComments === `function`) {
+      this._onComments();
+    }
   }
 }
 

@@ -173,8 +173,8 @@ const getRandomDate = (min, max) => new Date(Date.now() + getRandomInteger(min, 
 
 const getCommentContent = () => {
   return {
-    author: COMMENTS.AUTHORS[getRandomIndex(COMMENTS.AUTHORS)],
-    text: COMMENTS.TEXT[getRandomIndex(COMMENTS.TEXT)],
+    author: getOneRandomValue(COMMENTS.AUTHORS),
+    text: getOneRandomValue(COMMENTS.TEXT),
     emoji: COMMENTS.EMOJI.get(
         getOneRandomValue(
             [...COMMENTS.EMOJI.keys()]

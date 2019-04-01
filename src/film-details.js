@@ -3,18 +3,6 @@
 import Component from './component.js';
 import moment from 'moment';
 
-const USER_RATING = {
-  1: false,
-  2: false,
-  3: false,
-  4: false,
-  5: false,
-  6: false,
-  7: false,
-  8: false,
-  9: false
-};
-
 class FilmDetails extends Component {
   constructor(data) {
     super();
@@ -44,18 +32,6 @@ class FilmDetails extends Component {
 
   set onClose(fn) {
     this._onClose = fn;
-  }
-
-  _onCloseButtonClick() {
-
-    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
-    const newData = FilmDetails.processForm(formData);
-
-    if (typeof this._onClose === `function`) {
-      this._onClose(newData);
-    }
-
-    this.update(newData);
   }
 
   get template() {
@@ -192,9 +168,9 @@ class FilmDetails extends Component {
               <p class="film-details__user-rating-feelings">How you feel it?</p>
 
               <div class="film-details__user-rating-score">
-              ${(Array.from(Object.keys(USER_RATING)).map((key) => (`
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${key}" id="rating-${key}" ${this._rating.user === parseInt(key, 10) ? `checked` : ``}>
-                <label class="film-details__user-rating-label" for="rating-${key}">${key}</label>
+              ${([1, 2, 3, 4, 5, 6, 7, 8, 9].map((it) => (`
+                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${it}" id="rating-${it}" ${this._rating.user === it ? `checked` : ``}>
+                <label class="film-details__user-rating-label" for="rating-${it}">${it}</label>
                 `.trim()))).join(``)}
               </div>
             </section>
@@ -213,14 +189,26 @@ class FilmDetails extends Component {
   }
 
   update(data) {
-    this._rating.user = parseInt(data.rating.user, 10);
+    this._rating.user = data.rating.user;
     this._yourComment = data.yourComment;
+  }
+
+  _onCloseButtonClick() {
+
+    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
+    const newData = FilmDetails.processForm(formData);
+
+    if (typeof this._onClose === `function`) {
+      this._onClose(newData);
+    }
+
+    this.update(newData);
   }
 
   static processForm(formData) {
     const entry = {
       rating: {
-        user: ``
+        user: -1
       },
       yourComment: ``
     };
@@ -241,7 +229,7 @@ class FilmDetails extends Component {
   static createMapper(target) {
     return {
       score: (value) => {
-        target.rating.user = value;
+        target.rating.user = parseInt(value, 10);
       },
       comment: (value) => {
         target.yourComment = value;
