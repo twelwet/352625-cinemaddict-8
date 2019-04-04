@@ -234,6 +234,10 @@ const createFilm = () => {
       main: genres[0]
     },
 
+    isOnWatchList: false,
+    isWatched: false,
+    isFavorite: false,
+
     poster: `./images/posters/${getOneRandomValue(POSTERS)}`,
     comments,
     yourComment: ``,

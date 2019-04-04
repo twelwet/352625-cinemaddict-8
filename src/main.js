@@ -27,8 +27,26 @@ firstFilm.onComments = () => {
   body.appendChild(firstFilmDetails.element);
 };
 
+firstFilm.onAddToWatchList = () => {
+  film.isOnWatchList = !film.isOnWatchList;
+  firstFilmDetails.update(film);
+};
+
+firstFilm.onMarkAsWatched = () => {
+  film.isWatched = !film.isWatched;
+  firstFilmDetails.update(film);
+};
+
+firstFilm.onMarkAsFavorite = () => {
+  film.isFavorite = !film.isFavorite;
+  firstFilmDetails.update(film);
+};
+
 firstFilmDetails.onClose = (newObject) => {
   film.rating.user = newObject.rating.user;
+  film.isOnWatchList = newObject.isOnWatchList;
+  film.isWatched = newObject.isWatched;
+  film.isFavorite = newObject.isFavorite;
   firstFilmDetails.update(film);
   body.removeChild(firstFilmDetails.element);
   firstFilmDetails.unrender();

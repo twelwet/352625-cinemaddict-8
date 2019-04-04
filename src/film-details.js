@@ -24,10 +24,26 @@ class FilmDetails extends Component {
     this._comments = data.comments;
     this._yourComment = data.yourComment;
 
+    this._isOnWatchList = data.isOnWatchList;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
+
     this._extra = data.extra;
 
     this._onClose = null;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
+  }
+
+  _onCloseButtonClick() {
+
+    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
+    const newData = FilmDetails.processForm(formData);
+
+    if (typeof this._onClose === `function`) {
+      this._onClose(newData);
+    }
+
+    this.update(newData);
   }
 
   set onClose(fn) {
@@ -101,13 +117,13 @@ class FilmDetails extends Component {
         </div>
 
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._isOnWatchList ? `checked` : ``}>
           <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" checked>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${this._isWatched ? `checked` : ``}>
           <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._isFavorite ? `checked` : ``}>
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
         </section>
 
@@ -191,18 +207,9 @@ class FilmDetails extends Component {
   update(data) {
     this._rating.user = data.rating.user;
     this._yourComment = data.yourComment;
-  }
-
-  _onCloseButtonClick() {
-
-    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
-    const newData = FilmDetails.processForm(formData);
-
-    if (typeof this._onClose === `function`) {
-      this._onClose(newData);
-    }
-
-    this.update(newData);
+    this._isOnWatchList = data.isOnWatchList;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
   }
 
   static processForm(formData) {
@@ -210,7 +217,10 @@ class FilmDetails extends Component {
       rating: {
         user: -1
       },
-      yourComment: ``
+      yourComment: ``,
+      isOnWatchList: false,
+      isWatched: false,
+      isFavorite: false
     };
 
     const filmDetailsMapper = FilmDetails.createMapper(entry);
@@ -233,6 +243,15 @@ class FilmDetails extends Component {
       },
       comment: (value) => {
         target.yourComment = value;
+      },
+      watchlist: (value) => {
+        target.isOnWatchList = value === `on` ? true : false;
+      },
+      watched: (value) => {
+        target.isWatched = value === `on` ? true : false;
+      },
+      favorite: (value) => {
+        target.isFavorite = value === `on` ? true : false;
       }
     };
   }
