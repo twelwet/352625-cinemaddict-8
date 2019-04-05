@@ -98,7 +98,7 @@ class FilmDetails extends Component {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${moment.duration({h: this._duration.hours, m: this._duration.min}).asMinutes()} min</td>
+                <td class="film-details__cell">${this._duration} min</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>

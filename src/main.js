@@ -4,6 +4,7 @@ import downloaded from './mock-data.js';
 import Film from './film.js';
 import FilmDetails from './film-details.js';
 import Filter from './filter.js';
+import {showFilms, hideFilms, showStat, hideStat, activateStat} from './stat.js';
 
 const filtersContainer = document.querySelector(`.main-navigation`);
 const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
@@ -31,6 +32,9 @@ const filterFilms = (films, filterName) => {
     case `Favorites`:
       return films.filter((it) => it.isFavorite === true);
 
+    case `Stats`:
+      return [];
+
     default:
       throw new Error(`Unknown filter name`);
   }
@@ -38,8 +42,18 @@ const filterFilms = (films, filterName) => {
 
 filtersContainer.onclick = (evt) => {
   const filterName = evt.target.getAttribute(`value`);
-  const filteredFilms = filterFilms(downloaded.films.all, filterName);
-  renderFilms(filteredFilms);
+  switch (filterName) {
+    case `Stats`:
+      hideFilms();
+      showStat();
+      activateStat();
+      break;
+    default:
+      showFilms();
+      hideStat();
+      const filteredFilms = filterFilms(downloaded.films.all, filterName);
+      renderFilms(filteredFilms);
+  }
 };
 
 const renderFilms = (films) => {
