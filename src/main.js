@@ -5,8 +5,6 @@ import Film from './film.js';
 import FilmDetails from './film-details.js';
 import Filter from './filter.js';
 
-console.log(downloaded.films.all)
-
 const filtersContainer = document.querySelector(`.main-navigation`);
 const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
 const body = document.querySelector(`body`);
@@ -18,7 +16,33 @@ const filters = downloaded.filters.map((item) => {
 
 filters.forEach((item) => filtersContainer.appendChild(item.render()));
 
-const renderAllFilms = (films) => {
+const filterFilms = (films, filterName) => {
+  switch (filterName) {
+
+    case `All movies`:
+      return films;
+
+    case `Watchlist`:
+      return films.filter((it) => it.isOnWatchList === true);
+
+    case `History`:
+      return films.filter((it) => it.isWatched === true);
+
+    case `Favorites`:
+      return films.filter((it) => it.isFavorite === true);
+
+    default:
+      throw new Error(`Unknown filter name`);
+  }
+};
+
+filtersContainer.onclick = (evt) => {
+  const filterName = evt.target.getAttribute(`value`);
+  const filteredFilms = filterFilms(downloaded.films.all, filterName);
+  renderFilms(filteredFilms);
+};
+
+const renderFilms = (films) => {
   allFilmsContainer.innerHTML = ``;
 
   for (const film of films) {
@@ -59,4 +83,4 @@ const renderAllFilms = (films) => {
   }
 };
 
-renderAllFilms(downloaded.films.all);
+renderFilms(downloaded.films.all);
