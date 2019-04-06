@@ -50,7 +50,7 @@ class FilmDetails extends Component {
     this._onClose = fn;
   }
 
-  get template() {
+  get template() { // TODO давай шаблон поделим на части
     return `
     <section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -184,7 +184,7 @@ class FilmDetails extends Component {
               <p class="film-details__user-rating-feelings">How you feel it?</p>
 
               <div class="film-details__user-rating-score">
-              ${([1, 2, 3, 4, 5, 6, 7, 8, 9].map((it) => (`
+              ${([...Array(9)].map((_, it) => (`
                 <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${it}" id="rating-${it}" ${this._rating.user === it ? `checked` : ``}>
                 <label class="film-details__user-rating-label" for="rating-${it}">${it}</label>
                 `.trim()))).join(``)}
@@ -245,13 +245,13 @@ class FilmDetails extends Component {
         target.yourComment = value;
       },
       watchlist: (value) => {
-        target.isOnWatchList = value === `on` ? true : false;
+        target.isOnWatchList = value === `on`;
       },
       watched: (value) => {
-        target.isWatched = value === `on` ? true : false;
+        target.isWatched = value === `on`;
       },
       favorite: (value) => {
-        target.isFavorite = value === `on` ? true : false;
+        target.isFavorite = value === `on`;
       }
     };
   }

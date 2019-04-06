@@ -11,11 +11,7 @@ const getRandomFloating = (min, max) => {
 };
 
 const getRandomInteger = (min, max) => {
-  // Если объявляю `const rand = ...`, то консоль браузера ругается
-  // `Uncaught TypeError: Assignment to constant variable.`
-  let rand = getRandomFloating(min, max);
-  rand = Math.round(rand);
-  return rand;
+  return Math.round(getRandomFloating(min, max));
 };
 
 export {createElement, getRandomFloating, getRandomInteger};

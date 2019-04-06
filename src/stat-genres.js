@@ -2,7 +2,7 @@
 
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
+const BAR_HEIGHT = 50;
 const getStat = (films) => {
   const watchedFilms = films.filter((it) => it.isWatched === true);
   const bunch = [].concat(...watchedFilms.map((film) => Array.from(film.genres.all)));
@@ -15,7 +15,6 @@ const getStat = (films) => {
 };
 
 const getChart = (genresCtx) => {
-  const BAR_HEIGHT = 50;
   genresCtx.height = BAR_HEIGHT * 5;
 
   return new Chart(genresCtx, {

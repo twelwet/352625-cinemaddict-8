@@ -11,8 +11,7 @@ const allFilmsContainer = document.querySelector(`.films-list .films-list__conta
 const body = document.querySelector(`body`);
 
 const filters = downloaded.filters.map((item) => {
-  item = new Filter(item);
-  return item;
+  return new Filter(item);
 });
 
 filters.forEach((item) => filtersContainer.appendChild(item.render()));
@@ -20,7 +19,7 @@ filters.forEach((item) => filtersContainer.appendChild(item.render()));
 const filterFilms = (films, filterName) => {
   switch (filterName) {
 
-    case `All movies`:
+    case `All movies`: // TODO такое лучше в константы перенести
       return films;
 
     case `Watchlist`:
@@ -41,7 +40,7 @@ const filterFilms = (films, filterName) => {
 };
 
 filtersContainer.onclick = (evt) => {
-  const filterName = evt.target.getAttribute(`value`);
+  const filterName = evt.target.value;
   switch (filterName) {
     case `Stats`:
       hideFilms();
@@ -84,6 +83,7 @@ const renderFilms = (films) => {
     };
 
     filmDetailsComponent.onClose = (newObject) => {
+      // TODO посмотри на Object.assign
       film.rating.user = newObject.rating.user;
       film.isOnWatchList = newObject.isOnWatchList;
       film.isWatched = newObject.isWatched;
