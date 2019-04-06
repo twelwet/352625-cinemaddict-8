@@ -41,21 +41,32 @@ const filterFilms = (films, filterName) => {
   }
 };
 
-filtersContainer.onclick = (evt) => {
-  const filterName = evt.target.getAttribute(`value`);
-  switch (filterName) {
-    case `Stats`:
-      hideFilms();
-      showStat();
-      activateStat();
-      break;
-    default:
-      showFilms();
-      hideStat();
-      const filteredFilms = filterFilms(downloaded.films.all, filterName);
-      renderFilms(filteredFilms);
-  }
-};
+const filtersButtons = [...filtersContainer.querySelectorAll(`a`)];
+
+filtersButtons.forEach((it) => {
+
+  it.addEventListener(`click`, (evt) => {
+
+    filtersButtons.forEach((item) => item.classList.remove(`main-navigation__item--active`));
+    evt.currentTarget.classList.add(`main-navigation__item--active`);
+
+    const filterName = evt.currentTarget.getAttribute(`value`);
+
+    switch (filterName) {
+      case FILTERS_NAMES[4]:
+        hideFilms();
+        showStat();
+        activateStat();
+        break;
+      default:
+        showFilms();
+        hideStat();
+        const filteredFilms = filterFilms(downloaded.films.all, filterName);
+        renderFilms(filteredFilms);
+    }
+
+  });
+});
 
 const renderFilms = (films) => {
   allFilmsContainer.innerHTML = ``;
