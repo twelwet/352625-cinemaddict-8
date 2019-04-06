@@ -3,18 +3,6 @@
 import Component from './component.js';
 import moment from 'moment';
 
-const USER_RATING = {
-  1: false,
-  2: false,
-  3: false,
-  4: false,
-  5: false,
-  6: false,
-  7: false,
-  8: false,
-  9: false
-};
-
 class FilmDetails extends Component {
   constructor(data) {
     super();
@@ -36,14 +24,14 @@ class FilmDetails extends Component {
     this._comments = data.comments;
     this._yourComment = data.yourComment;
 
+    this._isOnWatchList = data.isOnWatchList;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
+
     this._extra = data.extra;
 
     this._onClose = null;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
-  }
-
-  set onClose(fn) {
-    this._onClose = fn;
   }
 
   _onCloseButtonClick() {
@@ -58,7 +46,11 @@ class FilmDetails extends Component {
     this.update(newData);
   }
 
-  get template() {
+  set onClose(fn) {
+    this._onClose = fn;
+  }
+
+  get template() { // TODO давай шаблон поделим на части
     return `
     <section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -106,7 +98,7 @@ class FilmDetails extends Component {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${moment.duration({h: this._duration.hours, m: this._duration.min}).asMinutes()} min</td>
+                <td class="film-details__cell">${this._duration} min</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -125,13 +117,13 @@ class FilmDetails extends Component {
         </div>
 
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._isOnWatchList ? `checked` : ``}>
           <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" checked>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${this._isWatched ? `checked` : ``}>
           <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._isFavorite ? `checked` : ``}>
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
         </section>
 
@@ -192,9 +184,9 @@ class FilmDetails extends Component {
               <p class="film-details__user-rating-feelings">How you feel it?</p>
 
               <div class="film-details__user-rating-score">
-              ${(Array.from(Object.keys(USER_RATING)).map((key) => (`
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${key}" id="rating-${key}" ${this._rating.user === parseInt(key, 10) ? `checked` : ``}>
-                <label class="film-details__user-rating-label" for="rating-${key}">${key}</label>
+              ${([...Array(9)].map((_, it) => (`
+                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${it}" id="rating-${it}" ${this._rating.user === it ? `checked` : ``}>
+                <label class="film-details__user-rating-label" for="rating-${it}">${it}</label>
                 `.trim()))).join(``)}
               </div>
             </section>
@@ -213,16 +205,22 @@ class FilmDetails extends Component {
   }
 
   update(data) {
-    this._rating.user = parseInt(data.rating.user, 10);
+    this._rating.user = data.rating.user;
     this._yourComment = data.yourComment;
+    this._isOnWatchList = data.isOnWatchList;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
   }
 
   static processForm(formData) {
     const entry = {
       rating: {
-        user: ``
+        user: -1
       },
-      yourComment: ``
+      yourComment: ``,
+      isOnWatchList: false,
+      isWatched: false,
+      isFavorite: false
     };
 
     const filmDetailsMapper = FilmDetails.createMapper(entry);
@@ -241,10 +239,19 @@ class FilmDetails extends Component {
   static createMapper(target) {
     return {
       score: (value) => {
-        target.rating.user = value;
+        target.rating.user = parseInt(value, 10);
       },
       comment: (value) => {
         target.yourComment = value;
+      },
+      watchlist: (value) => {
+        target.isOnWatchList = value === `on`;
+      },
+      watched: (value) => {
+        target.isWatched = value === `on`;
+      },
+      favorite: (value) => {
+        target.isFavorite = value === `on`;
       }
     };
   }

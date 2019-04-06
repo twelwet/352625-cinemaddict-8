@@ -17,7 +17,7 @@ class Filter extends Component {
     return `
       <a href="${this._link}" class="main-navigation__item
         ${this._active ? `main-navigation__item--active` : ``}
-        ${this._isStats ? `main-navigation__item--additional` : ``}">
+        ${this._isStats ? `main-navigation__item--additional` : ``}" value="${this._name}">
         ${this._name}
         <span ${this._isCount ? `class="main-navigation__item-count"` : ``}>${this._count}</span>
       </a>

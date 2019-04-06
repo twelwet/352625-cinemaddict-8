@@ -167,14 +167,17 @@ const getRandomArr = (array, min, max) => {
 };
 
 const actors = getRandomArr(ACTORS, 3, 6);
-const genres = getRandomArr(GENRES, 2, 4);
+const getRandomGenres = () => {
+  const genres = getRandomArr(GENRES, 2, 4);
+  return {all: genres, main: genres[0]};
+};
 
 const getRandomDate = (min, max) => new Date(Date.now() + getRandomInteger(min, max));
 
 const getCommentContent = () => {
   return {
-    author: COMMENTS.AUTHORS[getRandomIndex(COMMENTS.AUTHORS)],
-    text: COMMENTS.TEXT[getRandomIndex(COMMENTS.TEXT)],
+    author: getOneRandomValue(COMMENTS.AUTHORS),
+    text: getOneRandomValue(COMMENTS.TEXT),
     emoji: COMMENTS.EMOJI.get(
         getOneRandomValue(
             [...COMMENTS.EMOJI.keys()]
@@ -192,8 +195,6 @@ const getComments = (min = 1, max = 6) => {
   } while (comments.length < count);
   return comments;
 };
-
-const comments = getComments();
 
 const getSomePhrases = (text, min, max) => {
   const mockPhrases = text.split(`. `);
@@ -224,18 +225,17 @@ const createFilm = () => {
 
     date: getRandomDate(0, ONE_HUNDRED_YEARS_AGO),
     country: getOneRandomValue(COUNTRIES),
-    duration: {
-      hours: getRandomInteger(1, 3),
-      min: getRandomInteger(0, 59)
-    },
 
-    genres: {
-      all: genres,
-      main: genres[0]
-    },
+    duration: getRandomInteger(75, 210),
+
+    genres: getRandomGenres(),
+
+    isOnWatchList: Boolean(getRandomInteger(0, 1)),
+    isWatched: Boolean(getRandomInteger(0, 1)),
+    isFavorite: Boolean(getRandomInteger(0, 1)),
 
     poster: `./images/posters/${getOneRandomValue(POSTERS)}`,
-    comments,
+    comments: getComments(),
     yourComment: ``,
     extra: false
   };
