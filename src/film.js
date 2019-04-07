@@ -91,7 +91,7 @@ class Film extends Component {
           ${moment.duration(this._duration, `minutes`).hours()} :
           ${moment.duration(this._duration, `minutes`).minutes()}
         </span>
-        <span class="film-card__genre">${this._genres.main}</span>
+        <span class="film-card__genre">${this._genres[0]}</span>
       </p>
       <img src="${this._poster}" alt="" class="film-card__poster">
       <p class="film-card__description ${this._extra ? `visually-hidden` : ``}">${this._description}</p>

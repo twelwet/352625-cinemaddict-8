@@ -1,18 +1,18 @@
 // main.js
 
-import downloaded from './mock-data.js';
 import Film from './film.js';
 import FilmDetails from './film-details.js';
-import Filter from './filter.js';
+import {filtersData, Filter} from './filter.js';
 import {showFilms, hideFilms, showStat, hideStat, activateStat} from './stat.js';
+import api from './data-from-server.js';
 
-const FILTERS_NAMES = downloaded.filters.map((it) => it.name);
+const FILTERS_NAMES = filtersData.map((it) => it.name);
 
 const filtersContainer = document.querySelector(`.main-navigation`);
 const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
 const body = document.querySelector(`body`);
 
-const filters = downloaded.filters.map((item) => {
+const filters = filtersData.map((item) => {
   return new Filter(item);
 });
 
@@ -46,7 +46,7 @@ const filtersButtons = [...filtersContainer.querySelectorAll(`a`)];
 filtersButtons.forEach((it) => {
 
   it.addEventListener(`click`, (evt) => {
-
+    // FIXME Уместна ли в main.js активации кликнутого фильтра?
     filtersButtons.forEach((item) => item.classList.remove(`main-navigation__item--active`));
     evt.currentTarget.classList.add(`main-navigation__item--active`);
 
@@ -61,12 +61,21 @@ filtersButtons.forEach((it) => {
       default:
         showFilms();
         hideStat();
-        const filteredFilms = filterFilms(downloaded.films.all, filterName);
+        const filteredFilms = filterFilms(downloadedFilms, filterName);
         renderFilms(filteredFilms);
     }
 
   });
 });
+
+const updateFilmData = (entry, component) => {
+  api.updateFilm({id: entry.id, data: entry.toRAW()})
+    .then((newFilm) => {
+      component.update(newFilm);
+      body.removeChild(component.element);
+      component.unrender();
+    });
+};
 
 const renderFilms = (films) => {
   allFilmsContainer.innerHTML = ``;
@@ -82,29 +91,31 @@ const renderFilms = (films) => {
 
     filmComponent.onAddToWatchList = () => {
       film.isOnWatchList = !film.isOnWatchList;
-      filmDetailsComponent.update(film);
+      updateFilmData(film, filmDetailsComponent);
     };
 
     filmComponent.onMarkAsWatched = () => {
       film.isWatched = !film.isWatched;
-      filmDetailsComponent.update(film);
+      updateFilmData(film, filmDetailsComponent);
     };
 
     filmComponent.onMarkAsFavorite = () => {
       film.isFavorite = !film.isFavorite;
-      filmDetailsComponent.update(film);
+      updateFilmData(film, filmDetailsComponent);
     };
 
     filmDetailsComponent.onClose = (newObject) => {
       // TODO посмотри на Object.assign
       Object.assign(film, newObject);
-      filmDetailsComponent.update(film);
-      body.removeChild(filmDetailsComponent.element);
-      filmDetailsComponent.unrender();
+      updateFilmData(film, filmDetailsComponent);
     };
 
     allFilmsContainer.appendChild(filmComponent.render());
   }
 };
 
-renderFilms(downloaded.films.all);
+let downloadedFilms;
+api.getFilms().then((films) => {
+  downloadedFilms = films;
+  renderFilms(downloadedFilms);
+});

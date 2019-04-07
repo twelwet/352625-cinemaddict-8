@@ -5,7 +5,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 const BAR_HEIGHT = 50;
 const getStat = (films) => {
   const watchedFilms = films.filter((it) => it.isWatched === true);
-  const bunch = [].concat(...watchedFilms.map((film) => Array.from(film.genres.all)));
+  const bunch = [].concat(...watchedFilms.map((film) => Array.from(film.genres)));
   const names = [...new Set(bunch)];
   const quantites = names.map((genre) => bunch.filter((it) => it === genre).length);
   const youWatched = watchedFilms.length;

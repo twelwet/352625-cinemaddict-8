@@ -2,6 +2,12 @@
 
 import moment from 'moment';
 
+const EMOJI = new Map([
+  [`sleeping`, `😴`],
+  [`neutral-face`, `😐`],
+  [`grinning`, `😀`]
+]);
+
 const filmDetailsTemplate = (data) => `
 <section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -12,14 +18,14 @@ const filmDetailsTemplate = (data) => `
       <div class="film-details__poster">
         <img class="film-details__poster-img" src="${data._poster}" alt="${data._title}">
 
-        <p class="film-details__age">${data._rating.age}</p>
+        <p class="film-details__age">${data._rating.age}+</p>
       </div>
 
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
             <h3 class="film-details__title">${data._title}</h3>
-            <p class="film-details__title-original">Original: ${data._title}</p>
+            <p class="film-details__title-original">Original: ${data._altTitle}</p>
           </div>
 
           <div class="film-details__rating">
@@ -35,7 +41,7 @@ const filmDetailsTemplate = (data) => `
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">${data._writer}</td>
+            <td class="film-details__cell">${(Array.from(data._writers).map((writer) => writer.trim())).join(`, `)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
@@ -58,8 +64,8 @@ const filmDetailsTemplate = (data) => `
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-            ${(Array.from(data._genres.all).map((genre) => (`
-              <span class="film-details__genre">${genre}</span>`.trim()))).join(``)}
+            ${data._genres.map((genre) => (`
+              <span class="film-details__genre">${genre}</span>`.trim())).join(``)}
           </tr>
         </table>
 
@@ -82,14 +88,14 @@ const filmDetailsTemplate = (data) => `
       <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${data._comments.length}</span></h3>
 
       <ul class="film-details__comments-list">
-        ${(Array.from(data._comments).map((comment) => (`
+        ${(Array.from(data._comments).map((it) => (`
           <li class="film-details__comment">
-            <span class="film-details__comment-emoji">${comment.emoji}</span>
+            <span class="film-details__comment-emoji">${EMOJI.get(it.emotion)}</span>
             <div>
-              <p class="film-details__comment-text">${comment.text}</p>
+              <p class="film-details__comment-text">${it.comment}</p>
               <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${comment.author}</span>
-                <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
+                <span class="film-details__comment-author">${it.author}</span>
+                <span class="film-details__comment-day">${moment(it.date).fromNow()}</span>
               </p>
             </div>
           </li>

@@ -7,10 +7,11 @@ class FilmDetails extends Component {
   constructor(data) {
     super();
     this._title = data.title;
+    this._altTitle = data.altTitle;
     this._description = data.description;
 
     this._director = data.director;
-    this._writer = data.writer;
+    this._writers = data.writers;
     this._actors = data.actors;
 
     this._rating = data.rating;
