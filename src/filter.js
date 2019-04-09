@@ -1,7 +1,15 @@
 // filter.js
 
 import Component from './component.js';
-import {getRandomInteger} from './utils.js';
+import api from './data-from-server.js';
+
+const getFiltersCounts = (films) => {
+  return {
+    isOnWatchList: films.filter((film) => film.isOnWatchList).length,
+    isWatched: films.filter((film) => film.isWatched).length,
+    isFavorite: films.filter((film) => film.isFavorite).length
+  };
+};
 
 const filtersData = [
   {
@@ -18,7 +26,7 @@ const filtersData = [
     active: false,
     isStats: false,
     isCount: true,
-    count: getRandomInteger(1, 100)
+    count: api.getFilms().then((films) => getFiltersCounts(films).isOnWatchList)
   },
   {
     name: `History`,
@@ -26,7 +34,7 @@ const filtersData = [
     active: false,
     isStats: false,
     isCount: true,
-    count: getRandomInteger(1, 100)
+    count: api.getFilms().then((films) => getFiltersCounts(films).isWatched)
   },
   {
     name: `Favorites`,
@@ -34,7 +42,7 @@ const filtersData = [
     active: false,
     isStats: false,
     isCount: true,
-    count: getRandomInteger(1, 100)
+    count: api.getFilms().then((films) => getFiltersCounts(films).isFavorite)
   },
   {
     name: `Stats`,
