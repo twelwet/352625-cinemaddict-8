@@ -2,78 +2,52 @@
 
 import Film from './film.js';
 import FilmDetails from './film-details.js';
-import {filtersData, Filter} from './filter.js';
+import renderFilters from './render-filters.js';
+import {FILTERS_NAMES, filterFilms} from './filter-films.js';
 import {showFilms, hideFilms, showStat, hideStat, activateStat} from './stat.js';
-import api from './data-from-server.js';
-
-const FILTERS_NAMES = filtersData.map((it) => it.name);
+import {api, storage} from './data-from-server.js';
 
 const filtersContainer = document.querySelector(`.main-navigation`);
 const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
 const body = document.querySelector(`body`);
 
-const filters = filtersData.map((item) => {
-  return new Filter(item);
-});
+const addFiltersHandlers = () => {
+  const filtersButtons = [...filtersContainer.querySelectorAll(`.main-navigation__item`)];
 
-filters.forEach((item) => filtersContainer.appendChild(item.render()));
+  filtersButtons.forEach((it) => {
 
-const filterFilms = (films, filterName) => {
-  switch (filterName) {
+    it.addEventListener(`click`, (evt) => {
+      filtersButtons.forEach((item) => item.classList.remove(`main-navigation__item--active`));
+      evt.currentTarget.classList.add(`main-navigation__item--active`);
 
-    case FILTERS_NAMES[0]: // TODO такое лучше в константы перенести
-      return films;
+      const filterName = evt.currentTarget.getAttribute(`value`);
 
-    case FILTERS_NAMES[1]:
-      return films.filter((it) => it.isOnWatchList === true);
+      switch (filterName) {
+        case FILTERS_NAMES.STATS:
+          hideFilms();
+          showStat();
+          activateStat(storage.get()); // TODO самое простое это передавать актуальные фильмы туда где они нужны
+          break;
 
-    case FILTERS_NAMES[2]:
-      return films.filter((it) => it.isWatched === true);
+        default:
+          showFilms();
+          hideStat();
+          const filteredFilms = filterFilms(storage.get(), filterName);
+          renderFilms(filteredFilms);
+      }
 
-    case FILTERS_NAMES[3]:
-      return films.filter((it) => it.isFavorite === true);
-
-    case FILTERS_NAMES[4]:
-      return [];
-
-    default:
-      throw new Error(`Unknown filter name`);
-  }
-};
-
-const filtersButtons = [...filtersContainer.querySelectorAll(`a`)];
-
-filtersButtons.forEach((it) => {
-
-  it.addEventListener(`click`, (evt) => {
-    // FIXME Уместна ли в main.js активации кликнутого фильтра?
-    filtersButtons.forEach((item) => item.classList.remove(`main-navigation__item--active`));
-    evt.currentTarget.classList.add(`main-navigation__item--active`);
-
-    const filterName = evt.currentTarget.getAttribute(`value`);
-
-    switch (filterName) {
-      case FILTERS_NAMES[4]:
-        hideFilms();
-        showStat();
-        activateStat(downloadedFilms); // TODO самое простое это передавать актуальные фильмы туда где они нужны
-        break;
-      default:
-        showFilms();
-        hideStat();
-        const filteredFilms = filterFilms(downloadedFilms, filterName);
-        renderFilms(filteredFilms);
-    }
-
+    });
   });
-});
+};
 
 const updateFilmData = (entry, component) => {
   api.updateFilm({id: entry.id, data: entry.toRAW()})
     .then((newFilm) => {
       component.update(newFilm);
-      body.removeChild(component.element);
-      component.unrender();
+      if (component.element) {
+        body.removeChild(component.element);
+        component.unrender();
+      }
     });
 };
 
@@ -92,35 +66,40 @@ const renderFilms = (films) => {
     filmComponent.onAddToWatchList = () => {
       film.isOnWatchList = !film.isOnWatchList;
       updateFilmData(film, filmDetailsComponent);
+      renderFilters(storage.get(), filtersContainer);
+      addFiltersHandlers();
     };
 
     filmComponent.onMarkAsWatched = () => {
       film.isWatched = !film.isWatched;
       updateFilmData(film, filmDetailsComponent);
+      renderFilters(storage.get(), filtersContainer);
+      addFiltersHandlers();
     };
 
     filmComponent.onMarkAsFavorite = () => {
       film.isFavorite = !film.isFavorite;
       updateFilmData(film, filmDetailsComponent);
+      renderFilters(storage.get(), filtersContainer);
+      addFiltersHandlers();
     };
 
     filmDetailsComponent.onClose = (newObject) => {
       // TODO посмотри на Object.assign
       Object.assign(film, newObject);
       updateFilmData(film, filmDetailsComponent);
+      renderFilters(storage.get(), filtersContainer);
+      addFiltersHandlers();
     };
 
     allFilmsContainer.appendChild(filmComponent.render());
   }
 };
 
-let downloadedFilms = []; // TODO в принципе можно и так их хранить, но тогда нужно сделать функцию которая сможет их менять и отдавать
-export const getFilms = () => downloadedFilms;
-export const setFilms = (films) => {
-  downloadedFilms = films;
-};
 // TODO лучше сделать отдельный модуль и в нем собрать все методы для работы с данными
 api.getFilms().then((films) => {
-  downloadedFilms = films;
-  renderFilms(downloadedFilms);
+  storage.set(films);
+  renderFilters(storage.get(), filtersContainer);
+  addFiltersHandlers();
+  renderFilms(storage.get());
 });

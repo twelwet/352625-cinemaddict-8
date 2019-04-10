@@ -1,7 +1,6 @@
 // stat.js
 
 import {getStat, getChart} from './stat-genres.js';
-import api from './data-from-server.js';
 
 const filmsContainer = document.querySelector(`.films`);
 const statContainer = document.querySelector(`.statistic`);
@@ -16,7 +15,6 @@ const statCtx = document.querySelector(`.statistic__chart`);
 const statChart = getChart(statCtx);
 
 const activateStat = (downloadedFilms) => {
-  // FIXME не получается забрать из промиса данные о фильмах для функции статистики getStat(films)
   const {names, quantites, youWatched, totalDuration, topGenre} = getStat(downloadedFilms);
   statChart.data.labels = names;
   statChart.data.datasets[0].data = quantites;
