@@ -15,9 +15,9 @@ const hideStat = () => statContainer.classList.add(`visually-hidden`);
 const statCtx = document.querySelector(`.statistic__chart`);
 const statChart = getChart(statCtx);
 
-const activateStat = () => {
+const activateStat = (downloadedFilms) => {
   // FIXME не получается забрать из промиса данные о фильмах для функции статистики getStat(films)
-  const {names, quantites, youWatched, totalDuration, topGenre} = api.getFilms().then((films) => getStat(films));
+  const {names, quantites, youWatched, totalDuration, topGenre} = getStat(downloadedFilms);
   statChart.data.labels = names;
   statChart.data.datasets[0].data = quantites;
   statChart.update();

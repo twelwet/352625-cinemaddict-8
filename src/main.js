@@ -56,7 +56,7 @@ filtersButtons.forEach((it) => {
       case FILTERS_NAMES[4]:
         hideFilms();
         showStat();
-        activateStat();
+        activateStat(downloadedFilms); // TODO самое простое это передавать актуальные фильмы туда где они нужны
         break;
       default:
         showFilms();
@@ -114,7 +114,12 @@ const renderFilms = (films) => {
   }
 };
 
-let downloadedFilms;
+let downloadedFilms = []; // TODO в принципе можно и так их хранить, но тогда нужно сделать функцию которая сможет их менять и отдавать
+export const getFilms = () => downloadedFilms;
+export const setFilms = (films) => {
+  downloadedFilms = films;
+};
+// TODO лучше сделать отдельный модуль и в нем собрать все методы для работы с данными
 api.getFilms().then((films) => {
   downloadedFilms = films;
   renderFilms(downloadedFilms);
