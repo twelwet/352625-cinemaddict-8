@@ -104,18 +104,18 @@ const filmDetailsTemplate = (data) => `
 
       <div class="film-details__new-comment">
         <div>
-          <label for="add-emoji" class="film-details__add-emoji-label">😐</label>
+          <label for="add-emoji" class="film-details__add-emoji-label">${EMOJI.get(`neutral-face`)}</label>
           <input type="checkbox" class="film-details__add-emoji visually-hidden" id="add-emoji">
 
           <div class="film-details__emoji-list">
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-sleeping">😴</label>
+            <label class="film-details__emoji-label" for="emoji-sleeping">${EMOJI.get(`sleeping`)}</label>
 
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-neutral-face" value="neutral-face" checked>
-            <label class="film-details__emoji-label" for="emoji-neutral-face">😐</label>
+            <label class="film-details__emoji-label" for="emoji-neutral-face">${EMOJI.get(`neutral-face`)}</label>
 
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-grinning" value="grinning">
-            <label class="film-details__emoji-label" for="emoji-grinning">😀</label>
+            <label class="film-details__emoji-label" for="emoji-grinning">${EMOJI.get(`grinning`)}</label>
           </div>
         </div>
         <label class="film-details__comment-label">
@@ -142,8 +142,8 @@ const filmDetailsTemplate = (data) => `
 
           <div class="film-details__user-rating-score">
           ${([...Array(9)].map((_, it) => (`
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${it}" id="rating-${it}" ${data._rating.user === it ? `checked` : ``}>
-            <label class="film-details__user-rating-label" for="rating-${it}">${it}</label>
+            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${it + 1}" id="rating-${it + 1}" ${data._rating.user === it + 1 ? `checked` : ``}>
+            <label class="film-details__user-rating-label" for="rating-${it + 1}">${it + 1}</label>
             `.trim()))).join(``)}
           </div>
         </section>

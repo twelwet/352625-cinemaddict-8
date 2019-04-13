@@ -33,10 +33,19 @@ class FilmDetails extends Component {
 
     this._onClose = null;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
+    this._onEscPress = this._onEscPress.bind(this);
+
+    this._onUserRating = null;
+    this._onUserRatingClick = this._onUserRatingClick.bind(this);
+  }
+
+  _onEscPress(evt) {
+    if (evt.keyCode === 27) {
+      this._onCloseButtonClick();
+    }
   }
 
   _onCloseButtonClick() {
-
     const formData = new FormData(this._element.querySelector(`.film-details__inner`));
     const newData = FilmDetails.processForm(formData);
 
@@ -47,20 +56,58 @@ class FilmDetails extends Component {
     this.update(newData);
   }
 
+  _onUserRatingClick() {
+
+    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
+    const newData = FilmDetails.processForm(formData);
+
+    if (typeof this._onUserRating === `function`) {
+      this._onUserRating(newData);
+    }
+
+    this.update(newData);
+  }
+
   set onClose(fn) {
     this._onClose = fn;
+  }
+
+  set onUserRating(fn) {
+    this._onUserRating = fn;
   }
 
   get template() { // TODO давай шаблон поделим на части
     return filmDetailsTemplate(this);
   }
 
+  get inputs() {
+    switch (this.element) {
+      case null:
+        return [];
+      default:
+        return [...this._element.querySelectorAll(`.film-details__user-rating-input`)];
+    }
+  }
+
+  get labels() {
+    switch (this.element) {
+      case null:
+        return [];
+      default:
+        return [...this._element.querySelectorAll(`.film-details__user-rating-label`)];
+    }
+  }
+
   bind() {
     this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onCloseButtonClick);
+    document.addEventListener(`keydown`, this._onEscPress);
+    this.inputs.forEach((radio) => radio.addEventListener(`change`, this._onUserRatingClick));
   }
 
   unbind() {
     this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClick);
+    document.removeEventListener(`keydown`, this._onEscPress);
+    this.inputs.forEach((radio) => radio.removeEventListener(`change`, this._onUserRatingClick));
   }
 
   update(data) {
@@ -69,6 +116,43 @@ class FilmDetails extends Component {
     this._isOnWatchList = data.isOnWatchList;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
+  block() {
+    this.inputs.forEach((radio) => {
+      radio.disabled = true;
+      if (radio.checked) {
+        const checkedLabel = this.labels.filter((label) => label.htmlFor === radio.id)[0];
+        checkedLabel.style.backgroundColor = `#d8d8d8`;
+      }
+    });
+
+    this.labels.forEach((label) => {
+      label.style.opacity = `1.0`;
+    });
+  }
+
+  unblock() {
+    this.inputs.forEach((radio) => {
+      radio.disabled = false;
+      if (radio.checked) {
+        const checkedLabel = this.labels.filter((label) => label.htmlFor === radio.id)[0];
+        checkedLabel.style.backgroundColor = ``;
+      }
+    });
+
+    this.labels.forEach((label) => {
+      label.style.opacity = ``;
+    });
   }
 
   static processForm(formData) {

@@ -40,14 +40,30 @@ const addFiltersHandlers = () => {
   });
 };
 
+const resetLabelsColor = (component) => {
+  component.labels.forEach((label) => {
+    label.style.backgroundColor = ``;
+  });
+};
+
+const updateLabelColor = (component, color) => {
+  const targetRadio = component.inputs.filter((radio) => radio.checked)[0];
+  const targetLabel = component.labels.filter((label) => label.htmlFor === targetRadio.id)[0];
+  targetLabel.style.backgroundColor = color;
+};
+
 const updateFilmData = (entry, component) => {
   api.updateFilm({id: entry.id, data: entry.toRAW()})
     .then((newFilm) => {
+      resetLabelsColor(component);
+      component.unblock();
       component.update(newFilm);
-      if (component.element) {
-        body.removeChild(component.element);
-        component.unrender();
-      }
+    })
+    .catch(() => {
+      resetLabelsColor(component);
+      component.unblock();
+      component.shake();
+      updateLabelColor(component, `red`);
     });
 };
 
@@ -86,10 +102,21 @@ const renderFilms = (films) => {
 
     filmDetailsComponent.onClose = (newObject) => {
       // TODO посмотри на Object.assign
+      body.removeChild(filmDetailsComponent.element);
+      filmDetailsComponent.unrender();
+
       Object.assign(film, newObject);
       updateFilmData(film, filmDetailsComponent);
+
       renderFilters(storage.get(), filtersContainer);
       addFiltersHandlers();
+    };
+
+    filmDetailsComponent.onUserRating = (newObject) => {
+      Object.assign(film, newObject);
+      filmDetailsComponent.block();
+      updateFilmData(film, filmDetailsComponent);
+      filmDetailsComponent.element.querySelector(`.film-details__user-rating`).innerHTML = `Your rate ${film.rating.user}`;
     };
 
     allFilmsContainer.appendChild(filmComponent.render());
