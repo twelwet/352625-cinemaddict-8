@@ -39,7 +39,7 @@ const addFiltersHandlers = () => {
     });
   });
 };
-
+// TODO работу с разметкой лучше перенести в методы компонентов, туда где разметка задается
 const resetLabelsColor = (component) => {
   component.labels.forEach((label) => {
     label.style.backgroundColor = ``;

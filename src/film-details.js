@@ -80,7 +80,7 @@ class FilmDetails extends Component {
     return filmDetailsTemplate(this);
   }
 
-  get inputs() {
+  get inputs() { // TODO такое лучше тернарным описать
     switch (this.element) {
       case null:
         return [];
@@ -130,7 +130,7 @@ class FilmDetails extends Component {
   block() {
     this.inputs.forEach((radio) => {
       radio.disabled = true;
-      if (radio.checked) {
+      if (radio.checked) { // TODO тут вложенный цикл получается, лучше селектором обойтись
         const checkedLabel = this.labels.filter((label) => label.htmlFor === radio.id)[0];
         checkedLabel.style.backgroundColor = `#d8d8d8`;
       }
