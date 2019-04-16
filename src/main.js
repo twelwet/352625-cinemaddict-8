@@ -6,6 +6,7 @@ import renderFilters from './render-filters.js';
 import {FILTERS_NAMES, filterFilms} from './filter-films.js';
 import {showFilms, hideFilms, showStat, hideStat, activateStat} from './stat.js';
 import {api, storage} from './data-from-server.js';
+import LoadMessage from './load-message.js';
 
 const filtersContainer = document.querySelector(`.main-navigation`);
 const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
@@ -134,10 +135,25 @@ const renderFilms = (films) => {
   }
 };
 
+const onError = () => {
+  const node = document.createElement(`div`);
+  node.style = `width: auto; margin: 0 auto; text-align: center; background-color: red; font-size: 20px`;
+
+  node.textContent = `Something went wrong while loading movies. Check your connection or try again later`;
+  body.insertAdjacentElement(`afterbegin`, node);
+};
+
+const loadMessage = new LoadMessage();
+body.insertAdjacentElement(`afterbegin`, loadMessage.render());
+
 // TODO лучше сделать отдельный модуль и в нем собрать все методы для работы с данными
 api.getFilms().then((films) => {
   storage.set(films);
   renderFilters(storage.get(), filtersContainer);
   addFiltersHandlers();
   renderFilms(storage.get());
-});
+}).catch(onError)
+  .then(() => {
+    loadMessage.unrender();
+    body.removeChild(document.querySelector(`.load-message`));
+  });
