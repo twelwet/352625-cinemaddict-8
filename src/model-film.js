@@ -23,7 +23,12 @@ class ModelFilm {
     this.isFavorite = data.user_details.favorite;
     this.poster = data.film_info.poster;
     this.comments = data.comments;
-    this.yourComment = ``;
+    this.newComment = {
+      emotion: null,
+      author: null,
+      comment: ``,
+      date: null
+    };
   }
 
   toRAW() {

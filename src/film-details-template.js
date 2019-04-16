@@ -119,7 +119,7 @@ const filmDetailsTemplate = (data) => `
           </div>
         </div>
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="← Select reaction, add comment here" name="comment">${data._yourComment}</textarea>
+          <textarea class="film-details__comment-input" placeholder="← Select reaction, add comment here" name="comment">${data._newComment.comment}</textarea>
         </label>
       </div>
     </section>
@@ -152,4 +152,4 @@ const filmDetailsTemplate = (data) => `
   </form>
 </section>`.trim();
 
-export default filmDetailsTemplate;
+export {filmDetailsTemplate, EMOJI};

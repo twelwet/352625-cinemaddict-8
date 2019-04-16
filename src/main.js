@@ -39,31 +39,31 @@ const addFiltersHandlers = () => {
     });
   });
 };
-// TODO работу с разметкой лучше перенести в методы компонентов, туда где разметка задается
-const resetLabelsColor = (component) => {
-  component.labels.forEach((label) => {
-    label.style.backgroundColor = ``;
-  });
-};
-
-const updateLabelColor = (component, color) => {
-  const targetRadio = component.inputs.filter((radio) => radio.checked)[0];
-  const targetLabel = component.labels.filter((label) => label.htmlFor === targetRadio.id)[0];
-  targetLabel.style.backgroundColor = color;
-};
 
 const updateFilmData = (entry, component) => {
   api.updateFilm({id: entry.id, data: entry.toRAW()})
-    .then((newFilm) => {
-      resetLabelsColor(component);
-      component.unblock();
-      component.update(newFilm);
+    .then(() => {
+      component.resetCommentColor();
+      component.resetLabelsColor();
+
+      component.renderComments();
+      component.resetCommentField();
+
+      component.unblockRatingField();
+      component.unblockCommentField();
     })
     .catch(() => {
-      resetLabelsColor(component);
-      component.unblock();
+      component.resetCommentColor();
+      component.resetLabelsColor();
+
+      component.unblockRatingField();
+      component.unblockCommentField();
+
       component.shake();
-      updateLabelColor(component, `red`);
+      // FIXME Как отключить повторную анимацию карточки справа-налево?
+
+      component.updateCommentColor();
+      component.updateLabelColor();
     });
 };
 
@@ -114,9 +114,20 @@ const renderFilms = (films) => {
 
     filmDetailsComponent.onUserRating = (newObject) => {
       Object.assign(film, newObject);
-      filmDetailsComponent.block();
+      filmDetailsComponent.blockRatingField();
       updateFilmData(film, filmDetailsComponent);
       filmDetailsComponent.element.querySelector(`.film-details__user-rating`).innerHTML = `Your rate ${film.rating.user}`;
+    };
+
+    filmDetailsComponent.onCtrlEnter = (newObject) => {
+      Object.assign(film, newObject);
+
+      if (film.newComment.comment !== ``) {
+        film.comments.push(film.newComment);
+      }
+
+      filmDetailsComponent.blockCommentField();
+      updateFilmData(film, filmDetailsComponent);
     };
 
     allFilmsContainer.appendChild(filmComponent.render());
