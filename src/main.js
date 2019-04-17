@@ -18,10 +18,11 @@ const addFiltersHandlers = () => {
   filtersButtons.forEach((it) => {
 
     it.addEventListener(`click`, (evt) => {
-      filtersButtons.forEach((item) => item.classList.remove(`main-navigation__item--active`));
+      const currentActiveItem = filtersContainer.querySelector(`main-navigation__item--active`);
+      currentActiveItem.classList.remove(`main-navigation__item--active`);
       evt.currentTarget.classList.add(`main-navigation__item--active`);
 
-      const filterName = evt.currentTarget.getAttribute(`value`);
+      const filterName = evt.currentTarget.value;
 
       switch (filterName) {
         case FILTERS_NAMES.STATS:
@@ -42,7 +43,7 @@ const addFiltersHandlers = () => {
 };
 
 const updateFilmData = (entry, component) => {
-  api.updateFilm({id: entry.id, data: entry.toRAW()})
+  return api.updateFilm({id: entry.id, data: entry.toRAW()})
     .then(() => {
       component.resetCommentColor();
       component.resetLabelsColor();
@@ -82,9 +83,12 @@ const renderFilms = (films) => {
 
     filmComponent.onAddToWatchList = () => {
       film.isOnWatchList = !film.isOnWatchList;
-      updateFilmData(film, filmDetailsComponent);
-      renderFilters(storage.get(), filtersContainer);
-      addFiltersHandlers();
+      api.updateFilm({id: film.id, data: film.toRAW()})
+        .then(() => {
+          storage.update(film);
+          renderFilters(storage.get(), filtersContainer);
+          addFiltersHandlers();
+        }).catch(console.log);
     };
 
     filmComponent.onMarkAsWatched = () => {
@@ -102,15 +106,14 @@ const renderFilms = (films) => {
     };
 
     filmDetailsComponent.onClose = (newObject) => {
-      // TODO посмотри на Object.assign
-      body.removeChild(filmDetailsComponent.element);
-      filmDetailsComponent.unrender();
-
       Object.assign(film, newObject);
-      updateFilmData(film, filmDetailsComponent);
-
-      renderFilters(storage.get(), filtersContainer);
-      addFiltersHandlers();
+      updateFilmData(film, filmDetailsComponent).then(() => {
+        body.removeChild(filmDetailsComponent.element);
+        filmDetailsComponent.unrender();
+        storage.update(film);
+        renderFilters(storage.get(), filtersContainer);
+        addFiltersHandlers();
+      });
     };
 
     filmDetailsComponent.onUserRating = (newObject) => {
@@ -149,11 +152,9 @@ body.insertAdjacentElement(`afterbegin`, loadMessage.render());
 // TODO лучше сделать отдельный модуль и в нем собрать все методы для работы с данными
 api.getFilms().then((films) => {
   storage.set(films);
+  loadMessage.unrender();
+  body.removeChild(document.querySelector(`.load-message`));
   renderFilters(storage.get(), filtersContainer);
   addFiltersHandlers();
   renderFilms(storage.get());
-}).catch(onError)
-  .then(() => {
-    loadMessage.unrender();
-    body.removeChild(document.querySelector(`.load-message`));
-  });
+}).catch(onError);

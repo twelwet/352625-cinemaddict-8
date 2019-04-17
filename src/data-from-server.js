@@ -14,6 +14,9 @@ const storage = {
   },
   set(download) {
     this._inner = download;
+  },
+  update(film) {
+    Object.assign(this._inner.find(({id}) => id === film.id), film);
   }
 };
 

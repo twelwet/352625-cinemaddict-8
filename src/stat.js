@@ -4,6 +4,7 @@ import {getStat, getChart} from './stat-genres.js';
 
 const filmsContainer = document.querySelector(`.films`);
 const statContainer = document.querySelector(`.statistic`);
+statContainer.querySelector(`.statistic__filters`).classList.remove(`visually-hidden`);
 
 const showFilms = () => filmsContainer.classList.remove(`visually-hidden`);
 const hideFilms = () => filmsContainer.classList.add(`visually-hidden`);
