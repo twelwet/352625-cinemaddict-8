@@ -2,7 +2,7 @@
 
 import Film from './film.js';
 import FilmDetails from './film-details.js';
-import renderFilters from './render-filters.js';
+import {filtersData, renderFilters} from './render-filters.js';
 import {FILTERS_NAMES, filterFilms} from './filter-films.js';
 import {showFilms, hideFilms, showStat, hideStat, activateStat} from './stat.js';
 import {api, storage} from './data-from-server.js';
@@ -18,11 +18,13 @@ const addFiltersHandlers = () => {
   filtersButtons.forEach((it) => {
 
     it.addEventListener(`click`, (evt) => {
-      const currentActiveItem = filtersContainer.querySelector(`main-navigation__item--active`);
+      const currentActiveItem = filtersContainer.querySelector(`.main-navigation__item--active`);
+
       currentActiveItem.classList.remove(`main-navigation__item--active`);
       evt.currentTarget.classList.add(`main-navigation__item--active`);
 
-      const filterName = evt.currentTarget.value;
+      const filterName = evt.currentTarget.getAttribute(`value`);
+      filtersData.updateActiveField(filterName);
 
       switch (filterName) {
         case FILTERS_NAMES.STATS:
@@ -93,16 +95,22 @@ const renderFilms = (films) => {
 
     filmComponent.onMarkAsWatched = () => {
       film.isWatched = !film.isWatched;
-      updateFilmData(film, filmDetailsComponent);
-      renderFilters(storage.get(), filtersContainer);
-      addFiltersHandlers();
+      api.updateFilm({id: film.id, data: film.toRAW()})
+        .then(() => {
+          storage.update(film);
+          renderFilters(storage.get(), filtersContainer);
+          addFiltersHandlers();
+        }).catch(console.log);
     };
 
     filmComponent.onMarkAsFavorite = () => {
       film.isFavorite = !film.isFavorite;
-      updateFilmData(film, filmDetailsComponent);
-      renderFilters(storage.get(), filtersContainer);
-      addFiltersHandlers();
+      api.updateFilm({id: film.id, data: film.toRAW()})
+        .then(() => {
+          storage.update(film);
+          renderFilters(storage.get(), filtersContainer);
+          addFiltersHandlers();
+        }).catch(console.log);
     };
 
     filmDetailsComponent.onClose = (newObject) => {
