@@ -4,13 +4,19 @@ import Film from './film.js';
 import FilmDetails from './film-details.js';
 import {filtersData, renderFilters} from './render-filters.js';
 import {FILTERS_NAMES, filterFilms} from './filter-films.js';
-import {showFilms, hideFilms, showStat, hideStat, activateStat} from './stat.js';
+import Stat from './stat.js';
 import {api, storage} from './data-from-server.js';
 import LoadMessage from './load-message.js';
 
-const filtersContainer = document.querySelector(`.main-navigation`);
-const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
 const body = document.querySelector(`body`);
+const filtersContainer = body.querySelector(`.main-navigation`);
+const filmsContainer = body.querySelector(`.films`);
+const allFilmsContainer = filmsContainer.querySelector(`.films-list .films-list__container`);
+
+const showFilms = () => filmsContainer.classList.remove(`visually-hidden`);
+const hideFilms = () => filmsContainer.classList.add(`visually-hidden`);
+
+let stat;
 
 const addFiltersHandlers = () => {
   const filtersButtons = [...filtersContainer.querySelectorAll(`.main-navigation__item`)];
@@ -29,13 +35,13 @@ const addFiltersHandlers = () => {
       switch (filterName) {
         case FILTERS_NAMES.STATS:
           hideFilms();
-          showStat();
-          activateStat(storage.get()); // TODO самое простое это передавать актуальные фильмы туда где они нужны
+          stat.update(storage.get());
+          stat.show();
           break;
 
         default:
           showFilms();
-          hideStat();
+          stat.hide();
           const filteredFilms = filterFilms(storage.get(), filterName);
           renderFilms(filteredFilms);
       }
@@ -160,6 +166,8 @@ body.insertAdjacentElement(`afterbegin`, loadMessage.render());
 // TODO лучше сделать отдельный модуль и в нем собрать все методы для работы с данными
 api.getFilms().then((films) => {
   storage.set(films);
+  stat = new Stat(storage.get());
+  stat.create();
   loadMessage.unrender();
   body.removeChild(document.querySelector(`.load-message`));
   renderFilters(storage.get(), filtersContainer);

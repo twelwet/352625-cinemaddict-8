@@ -1,18 +1,8 @@
-// stat-genres.js
+// get-chart.js
 
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 const BAR_HEIGHT = 50;
-const getStat = (films) => {
-  const watchedFilms = films.filter((it) => it.isWatched === true);
-  const bunch = [].concat(...watchedFilms.map((film) => Array.from(film.genres)));
-  const names = [...new Set(bunch)];
-  const quantites = names.map((genre) => bunch.filter((it) => it === genre).length);
-  const youWatched = watchedFilms.length;
-  const totalDuration = [].concat(...watchedFilms.map((film) => film.duration)).reduce((acc, duration) => acc + duration);
-  const topGenre = names[quantites.indexOf(Math.max(...quantites))];
-  return {names, quantites, youWatched, totalDuration, topGenre};
-};
 
 const getChart = (genresCtx) => {
   genresCtx.height = BAR_HEIGHT * 5;
@@ -75,4 +65,4 @@ const getChart = (genresCtx) => {
   });
 };
 
-export {getStat, getChart};
+export default getChart;
