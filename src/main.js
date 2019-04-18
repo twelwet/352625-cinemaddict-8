@@ -52,3 +52,5 @@ api.getFilms().then((films) => {
   renderFilters(storage.get(), filtersContainer, switchScreen);
   showFilms();
 }).catch(onError);
+
+export default switchScreen;

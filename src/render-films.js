@@ -2,6 +2,7 @@ import {api, storage} from "./data-from-server";
 import Film from "./film";
 import FilmDetails from "./film-details";
 import {renderFilters} from "./render-filters";
+import switchScreen from './main.js';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
@@ -53,7 +54,7 @@ export const renderFilms = (films) => {
       api.updateFilm({id: film.id, data: film.toRAW()})
         .then(() => {
           storage.update(film);
-          renderFilters(storage.get(), filtersContainer);
+          renderFilters(storage.get(), filtersContainer, switchScreen);
         }).catch(console.log);
     };
 
@@ -62,7 +63,7 @@ export const renderFilms = (films) => {
       api.updateFilm({id: film.id, data: film.toRAW()})
         .then(() => {
           storage.update(film);
-          renderFilters(storage.get(), filtersContainer);
+          renderFilters(storage.get(), filtersContainer, switchScreen);
         }).catch(console.log);
     };
 
@@ -71,7 +72,7 @@ export const renderFilms = (films) => {
       api.updateFilm({id: film.id, data: film.toRAW()})
         .then(() => {
           storage.update(film);
-          renderFilters(storage.get(), filtersContainer);
+          renderFilters(storage.get(), filtersContainer, switchScreen);
         }).catch(console.log);
     };
 
@@ -81,7 +82,7 @@ export const renderFilms = (films) => {
         body.removeChild(filmDetailsComponent.element);
         filmDetailsComponent.unrender();
         storage.update(film);
-        renderFilters(storage.get(), filtersContainer);
+        renderFilters(storage.get(), filtersContainer, switchScreen);
       });
     };
 
