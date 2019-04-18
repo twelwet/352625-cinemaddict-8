@@ -35,8 +35,6 @@ const updateFilmData = (entry, component) => {
     });
 };
 
-
-
 export const renderFilms = (films) => {
   allFilmsContainer.innerHTML = ``;
 

@@ -6,6 +6,7 @@ import {Filter, filterFilms} from './filter-films.js';
 import Stat from './stat.js';
 import {api, storage} from './data-from-server.js';
 import LoadMessage from './load-message.js';
+import filterFilmsByPeriod from './filter-films-by-period.js';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
@@ -25,6 +26,11 @@ const showStats = () => {
   statsContainer.classList.remove(`visually-hidden`);
   filmsContainer.classList.add(`visually-hidden`);
   stat.update(storage.get());
+
+  const statFilters = [...statsContainer.querySelectorAll(`.statistic__filters-input`)];
+  statFilters.forEach((filter) =>
+    filter.addEventListener(`click`, (evt) =>
+      stat.update(filterFilmsByPeriod(storage.get(), evt.currentTarget.id))));
 };
 
 const onError = () => {
@@ -47,6 +53,7 @@ body.insertAdjacentElement(`afterbegin`, loadMessage.element);
 
 api.getFilms().then((films) => {
   storage.set(films);
+  filterFilmsByPeriod(storage.get(), `statistic-week`);
   body.removeChild(loadMessage.element);
   loadMessage.unrender();
   renderFilters(storage.get(), filtersContainer, switchScreen);

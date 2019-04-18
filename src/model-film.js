@@ -20,6 +20,7 @@ class ModelFilm {
     this.genres = data.film_info.genre;
     this.isOnWatchList = data.user_details.watchlist;
     this.isWatched = data.user_details.already_watched;
+    this.watchingDate = data.user_details.watching_date;
     this.isFavorite = data.user_details.favorite;
     this.poster = data.film_info.poster;
     this.comments = data.comments;
@@ -56,7 +57,7 @@ class ModelFilm {
         already_watched: this.isWatched,
         favorite: this.isFavorite,
         personal_rating: this.rating.user,
-        watching_date: ``,
+        watching_date: this.watchingDate,
         watchlist: this.isOnWatchList
       }
     };
