@@ -1,6 +1,6 @@
 // filter-films.js
 
-const FILTERS_NAMES = {
+const Filter = {
   ALL: `All movies`,
   WATCHLIST: `Watchlist`,
   HISTORY: `History`,
@@ -11,19 +11,19 @@ const FILTERS_NAMES = {
 const filterFilms = (films, filterName) => {
   switch (filterName) {
 
-    case FILTERS_NAMES.ALL: // TODO такое лучше в константы перенести
+    case Filter.ALL: // TODO такое лучше в константы перенести
       return films;
 
-    case FILTERS_NAMES.WATCHLIST:
+    case Filter.WATCHLIST:
       return films.filter((it) => it.isOnWatchList === true);
 
-    case FILTERS_NAMES.HISTORY:
+    case Filter.HISTORY:
       return films.filter((it) => it.isWatched === true);
 
-    case FILTERS_NAMES.FAVORITES:
+    case Filter.FAVORITES:
       return films.filter((it) => it.isFavorite === true);
 
-    case FILTERS_NAMES.STATS:
+    case Filter.STATS:
       return [];
 
     default:
@@ -31,4 +31,4 @@ const filterFilms = (films, filterName) => {
   }
 };
 
-export {FILTERS_NAMES, filterFilms};
+export {Filter, filterFilms};

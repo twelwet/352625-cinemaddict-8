@@ -39,26 +39,26 @@ const filtersData = {
     },
   ],
 
-  get() {
+  get all() {
     return this._inner;
   },
-
-  updateActiveField(filterName) {
+  updateActiveField(filter) {
     this._inner.forEach((item) => {
-      item.active = false;
-      if (item.name === filterName) {
-        item.active = true;
-      }
+      item.active = item === filter;
     });
   }
 };
 
-const createFilters = (films) => filtersData.get().map((item) => new Filter(item, films));
-
-const renderFilters = (films, container) => {
+export const renderFilters = (films, container, cb) => {
   container.innerHTML = ``;
-  createFilters(films)
-    .forEach((item) => container.appendChild(item.render()));
+  const elements = filtersData.all.map((item) => {
+    const filter = new Filter(item, films);
+    filter.onClick = (name) => {
+      filtersData.updateActiveField(item);
+      renderFilters(films, container, cb);
+      cb(name);
+    };
+    return filter.element;
+  });
+  container.append(...elements);
 };
-
-export {filtersData, renderFilters};

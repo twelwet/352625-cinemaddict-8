@@ -185,6 +185,10 @@ class FilmDetails extends Component {
     this._isFavorite = data.isFavorite;
   }
 
+  updateUserRating(rating) {
+    this.element.querySelector(`.film-details__user-rating`).textContent = `Your rate ${rating}`;
+  }
+
   shake() {
     const ANIMATION_TIMEOUT = 600;
     this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
