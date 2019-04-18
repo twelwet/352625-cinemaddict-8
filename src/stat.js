@@ -3,14 +3,15 @@
 import Component from './component.js';
 import getChart from './get-chart.js';
 import moment from 'moment';
+import {createElement} from "./utils";
 
 const getStat = (films) => {
-  const watchedFilms = films.filter((it) => it.isWatched === true);
+  const watchedFilms = films.filter((it) => it.isWatched);
   const bunch = [].concat(...watchedFilms.map((film) => Array.from(film.genres)));
   const names = [...new Set(bunch)];
   const quantites = names.map((genre) => bunch.filter((it) => it === genre).length);
   const youWatched = watchedFilms.length;
-  const totalDuration = [].concat(...watchedFilms.map((film) => film.duration)).reduce((acc, duration) => acc + duration);
+  const totalDuration = [].concat(...watchedFilms.map((film) => film.duration)).reduce((acc, duration) => acc + duration, 0);
   const topGenre = names[quantites.indexOf(Math.max(...quantites))];
   return {names, quantites, youWatched, totalDuration, topGenre};
 };
@@ -27,6 +28,28 @@ class Stat extends Component {
 
   _ctx() {
     return this._element.querySelector(`.statistic__chart`);
+  }
+
+  get _statTemplate() {
+    return `
+      <ul class="statistic__text-list">
+          <li class="statistic__text-item">
+            <h4 class="statistic__item-title">You watched</h4>
+            <p class="statistic__item-text">${this._youWatched} <span class="statistic__item-description">movies</span></p>
+          </li>
+          <li class="statistic__text-item">
+            <h4 class="statistic__item-title">Total duration</h4>
+            <p class="statistic__item-text">
+              ${moment.duration(this._totalDuration, `minutes`).hours()} <span class="statistic__item-description">h</span>
+              ${moment.duration(this._totalDuration, `minutes`).minutes()} <span class="statistic__item-description">m</span>
+            </p>
+          </li>
+          <li class="statistic__text-item">
+            <h4 class="statistic__item-title">Top genre</h4>
+            <p class="statistic__item-text">${this._topGenre}</p>
+          </li>
+        </ul>
+    `.trim();
   }
 
   get template() {
@@ -53,23 +76,7 @@ class Stat extends Component {
           <label for="statistic-year" class="statistic__filters-label">Year</label>
         </form>
 
-        <ul class="statistic__text-list">
-          <li class="statistic__text-item">
-            <h4 class="statistic__item-title">You watched</h4>
-            <p class="statistic__item-text">${this._youWatched} <span class="statistic__item-description">movies</span></p>
-          </li>
-          <li class="statistic__text-item">
-            <h4 class="statistic__item-title">Total duration</h4>
-            <p class="statistic__item-text">
-              ${moment.duration(this._totalDuration, `minutes`).hours()} <span class="statistic__item-description">h</span>
-              ${moment.duration(this._totalDuration, `minutes`).minutes()} <span class="statistic__item-description">m</span>
-            </p>
-          </li>
-          <li class="statistic__text-item">
-            <h4 class="statistic__item-title">Top genre</h4>
-            <p class="statistic__item-text">${this._topGenre}</p>
-          </li>
-        </ul>
+        ${this._statTemplate}
 
         <div class="statistic__chart-wrap">
           <canvas class="statistic__chart" width="1000"></canvas>
@@ -83,6 +90,10 @@ class Stat extends Component {
     this._chart = getChart(this._ctx());
   }
 
+  partialUpdate() {
+    this._element.replaceChild(createElement(this._statTemplate), this._element.querySelector(`.statistic__text-list`));
+  }
+
   update(downloaded) {
     const {names, quantites, youWatched, totalDuration, topGenre} = getStat(downloaded);
     this._chart.data.labels = names;
@@ -91,6 +102,7 @@ class Stat extends Component {
     this._totalDuration = totalDuration;
     this._topGenre = topGenre;
     this._chart.update();
+    this.partialUpdate();
   }
 }
 
