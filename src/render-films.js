@@ -43,6 +43,7 @@ export const renderFilms = (films) => {
     const filmDetailsComponent = new FilmDetails(film);
 
     filmComponent.onComments = () => {
+      filmDetailsComponent.update(film);
       filmDetailsComponent.render();
       body.appendChild(filmDetailsComponent.element);
     };
