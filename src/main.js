@@ -18,28 +18,18 @@ const filmsContainer = films.element;
 main.appendChild(filmsContainer);
 const allFilmsContainer = filmsContainer.querySelector(`.films-list .films-list__container`);
 
-const showMoreButton = filmsContainer.querySelector(`.films-list__show-more`);
-
 const stat = new Stat(storage.get());
 const statsContainer = stat.element;
 stat.create();
 main.appendChild(statsContainer);
 
-const onShowMoreClick = () => films.showNext(5);
-
-const activateShowMore = () => {
-  films.displayShowMoreButton();
-  showMoreButton.removeEventListener(`click`, onShowMoreClick);
-  films.hideAll();
-  films.show(5);
-  showMoreButton.addEventListener(`click`, onShowMoreClick);
-};
+films.onShowMore = () => films.showNext(5);
 
 const showFilms = (filter = Filter.ALL) => {
   filmsContainer.classList.remove(`visually-hidden`);
   statsContainer.classList.add(`visually-hidden`);
   renderFilms(filterFilms(storage.get(), filter), allFilmsContainer);
-  activateShowMore();
+  films.activateShowMore(5);
 };
 
 const showStats = () => {
