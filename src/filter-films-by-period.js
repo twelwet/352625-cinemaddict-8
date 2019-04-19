@@ -12,8 +12,8 @@ const StatPeriods = {
 
 const isToday = (watchingDate) => {
   const now = moment();
-  const beginningOfToday = `${now.year()}-${now.month()}-${now.date()} 00:00:00`;
-  return moment(watchingDate).isBetween(beginningOfToday, `${now}`);
+  const beginningOfToday = moment().hours(0).minutes(0).seconds(0);
+  return moment(watchingDate).isBetween(beginningOfToday, now);
 };
 
 const isWeekAgo = (watchingDate) => {
