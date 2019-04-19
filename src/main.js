@@ -3,25 +3,45 @@
 import {renderFilms} from "./render-films";
 import {renderFilters} from './render-filters.js';
 import {Filter, filterFilms} from './filter-films.js';
+import Films from './films.js';
 import Stat from './stat.js';
 import {api, storage} from './data-from-server.js';
 import LoadMessage from './load-message.js';
 import filterFilmsByPeriod from './filter-films-by-period.js';
 
 const body = document.querySelector(`body`);
+const main = body.querySelector(`main`);
 const filtersContainer = body.querySelector(`.main-navigation`);
-const filmsContainer = body.querySelector(`.films`);
+
+const films = new Films();
+const filmsContainer = films.element;
+main.appendChild(filmsContainer);
+const allFilmsContainer = filmsContainer.querySelector(`.films-list .films-list__container`);
+
+const showMoreButton = filmsContainer.querySelector(`.films-list__show-more`);
 
 const stat = new Stat(storage.get());
 const statsContainer = stat.element;
 stat.create();
-document.querySelector(`main`).appendChild(statsContainer);
+main.appendChild(statsContainer);
+
+const onShowMoreClick = () => films.showNext(5);
+
+const activateShowMore = () => {
+  films.displayShowMoreButton();
+  showMoreButton.removeEventListener(`click`, onShowMoreClick);
+  films.hideAll();
+  films.show(5);
+  showMoreButton.addEventListener(`click`, onShowMoreClick);
+};
 
 const showFilms = (filter = Filter.ALL) => {
   filmsContainer.classList.remove(`visually-hidden`);
   statsContainer.classList.add(`visually-hidden`);
-  renderFilms(filterFilms(storage.get(), filter));
+  renderFilms(filterFilms(storage.get(), filter), allFilmsContainer);
+  activateShowMore();
 };
+
 const showStats = () => {
   statsContainer.classList.remove(`visually-hidden`);
   filmsContainer.classList.add(`visually-hidden`);
@@ -51,9 +71,8 @@ const switchScreen = (name) => {
 const loadMessage = new LoadMessage();
 body.insertAdjacentElement(`afterbegin`, loadMessage.element);
 
-api.getFilms().then((films) => {
-  storage.set(films);
-  filterFilmsByPeriod(storage.get(), `statistic-week`);
+api.getFilms().then((downloadedFilms) => {
+  storage.set(downloadedFilms);
   body.removeChild(loadMessage.element);
   loadMessage.unrender();
   renderFilters(storage.get(), filtersContainer, switchScreen);

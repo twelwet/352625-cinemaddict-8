@@ -6,7 +6,6 @@ import switchScreen from './main.js';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
-const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
 
 const updateFilmData = (entry, component) => {
   return api.updateFilm({id: entry.id, data: entry.toRAW()})
@@ -35,8 +34,8 @@ const updateFilmData = (entry, component) => {
     });
 };
 
-export const renderFilms = (films) => {
-  allFilmsContainer.innerHTML = ``;
+export const renderFilms = (films, container) => {
+  container.innerHTML = ``;
 
   for (const film of films) {
     const filmComponent = new Film(film);
@@ -104,6 +103,6 @@ export const renderFilms = (films) => {
       updateFilmData(film, filmDetailsComponent);
     };
 
-    allFilmsContainer.appendChild(filmComponent.render());
+    container.appendChild(filmComponent.render());
   }
 };
