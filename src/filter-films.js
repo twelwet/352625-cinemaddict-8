@@ -9,6 +9,7 @@ const Filter = {
 };
 
 const filterFilms = (films, filterName) => {
+
   switch (filterName) {
 
     case Filter.ALL: // TODO такое лучше в константы перенести

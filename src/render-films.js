@@ -1,7 +1,7 @@
 import {api, storage} from "./data-from-server";
 import FilmDetails from "./film-details";
 import {renderFilters} from "./render-filters";
-import switchScreen from './main.js';
+import {activateFilmsScreen, switchScreen} from './main.js';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
@@ -87,6 +87,7 @@ export const renderFilms = (films, container, Cmpnt) => {
     };
 
     filmDetailsComponent.onClose = (newObject) => {
+      // FIXME Object.assign затирает вложенные свойства film.rating.total и film.rating.age, как быть?
       Object.assign(film, newObject);
       updateWatchingDate(film);
       updateFilmData(film, filmDetailsComponent).then(() => {
@@ -94,6 +95,8 @@ export const renderFilms = (films, container, Cmpnt) => {
         filmDetailsComponent.unrender();
         storage.update(film);
         renderFilters(storage.get(), filtersContainer, switchScreen);
+        const activeFilterName = filtersContainer.querySelector(`.main-navigation__item--active`).attributes[2].value;
+        activateFilmsScreen(activeFilterName);
       });
     };
 

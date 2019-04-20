@@ -29,11 +29,16 @@ main.appendChild(statsContainer);
 
 films.onShowMore = () => films.showNext(5);
 
+const activateFilmsScreen = (filter) => {
+  renderFilms(filterFilms(storage.get(), filter), allFilmsContainer, Film);
+  films.activateShowMore(5);
+  renderFilms(getMostCommented(storage.get(), 2), mostCommentedContainer, FilmExtra);
+};
+
 const showFilms = (filter = Filter.ALL) => {
   filmsContainer.classList.remove(`visually-hidden`);
   statsContainer.classList.add(`visually-hidden`);
-  renderFilms(filterFilms(storage.get(), filter), allFilmsContainer, Film);
-  films.activateShowMore(5);
+  activateFilmsScreen(filter);
 };
 
 const showStats = () => {
@@ -76,4 +81,4 @@ api.getFilms().then((downloadedFilms) => {
   renderFilms(getMostCommented(storage.get(), 2), mostCommentedContainer, FilmExtra);
 }).catch(onError);
 
-export default switchScreen;
+export {activateFilmsScreen, switchScreen};
