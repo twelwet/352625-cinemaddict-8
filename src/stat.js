@@ -5,13 +5,14 @@ import getChart from './get-chart.js';
 import moment from 'moment';
 import {createElement} from "./utils";
 
-const getRank = (youWatched) => {
+const getRank = (data) => {
+  const count = data.filter((it) => it.isWatched).length;
   let rank = `Watch anything`;
-  if (youWatched > 0 && youWatched <= 10) {
+  if (count > 0 && count <= 10) {
     rank = `Novice`;
-  } else if (youWatched > 10 && youWatched < 20) {
+  } else if (count > 10 && count < 20) {
     rank = `Fan`;
-  } else if (youWatched >= 20) {
+  } else if (count >= 20) {
     rank = `Movie buff`;
   }
   return rank;
@@ -25,15 +26,14 @@ const getStat = (films) => {
   const youWatched = watchedFilms.length;
   const totalDuration = [].concat(...watchedFilms.map((film) => film.duration)).reduce((acc, duration) => acc + duration, 0);
   const topGenre = names[quantites.indexOf(Math.max(...quantites))];
-  const rank = getRank(youWatched);
-  return {names, quantites, youWatched, totalDuration, topGenre, rank};
+  return {names, quantites, youWatched, totalDuration, topGenre};
 };
 
 class Stat extends Component {
   constructor(data) {
     super();
     this._chart = null;
-    this._rank = getStat(data).rank;
+    this._rank = getRank(data);
     this._youWatched = getStat(data).youWatched;
     this._totalDuration = getStat(data).totalDuration;
     this._topGenre = getStat(data).topGenre;
@@ -130,15 +130,18 @@ class Stat extends Component {
   }
 
   update(downloaded) {
-    const {names, quantites, youWatched, totalDuration, topGenre, rank} = getStat(downloaded);
+    const {names, quantites, youWatched, totalDuration, topGenre} = getStat(downloaded);
     this._chart.data.labels = names;
     this._chart.data.datasets[0].data = quantites;
     this._youWatched = youWatched;
     this._totalDuration = totalDuration;
     this._topGenre = topGenre;
-    this._rank = rank;
     this._chart.update();
     this.partialUpdate();
+  }
+
+  updateRank(downloaded) {
+    this._rank = getRank(downloaded);
   }
 }
 
