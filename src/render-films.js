@@ -1,9 +1,7 @@
 import {api, storage} from "./data-from-server";
-import Film from "./film";
 import FilmDetails from "./film-details";
 import {renderFilters} from "./render-filters";
 import switchScreen from './main.js';
-import moment from 'moment';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
@@ -47,11 +45,11 @@ const updateWatchingDate = (film) => {
 
 };
 
-export const renderFilms = (films, container) => {
+export const renderFilms = (films, container, Cmpnt) => {
   container.innerHTML = ``;
 
   for (const film of films) {
-    const filmComponent = new Film(film);
+    const filmComponent = new Cmpnt(film);
     const filmDetailsComponent = new FilmDetails(film);
 
     filmComponent.onComments = () => {

@@ -76,7 +76,7 @@ class Films extends Component {
   }
 
   get _nodes() {
-    return [...this._element.querySelectorAll(`.film-card`)];
+    return [...this._element.querySelectorAll(`.films-list .film-card`)];
   }
 
   get _shownNodes() {
