@@ -3,6 +3,7 @@ import Film from "./film";
 import FilmDetails from "./film-details";
 import {renderFilters} from "./render-filters";
 import switchScreen from './main.js';
+import moment from 'moment';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
@@ -34,6 +35,18 @@ const updateFilmData = (entry, component) => {
     });
 };
 
+const updateWatchingDate = (film) => {
+
+  if (film.isWatched && film.watchingDate === null) {
+    film.watchingDate = Date.now();
+  }
+
+  if (!film.isWatched) {
+    film.watchingDate = null;
+  }
+
+};
+
 export const renderFilms = (films, container) => {
   container.innerHTML = ``;
 
@@ -58,6 +71,7 @@ export const renderFilms = (films, container) => {
 
     filmComponent.onMarkAsWatched = () => {
       film.isWatched = !film.isWatched;
+      updateWatchingDate(film);
       api.updateFilm({id: film.id, data: film.toRAW()})
         .then(() => {
           storage.update(film);
@@ -76,6 +90,7 @@ export const renderFilms = (films, container) => {
 
     filmDetailsComponent.onClose = (newObject) => {
       Object.assign(film, newObject);
+      updateWatchingDate(film);
       updateFilmData(film, filmDetailsComponent).then(() => {
         body.removeChild(filmDetailsComponent.element);
         filmDetailsComponent.unrender();
