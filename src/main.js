@@ -35,12 +35,13 @@ const showFilms = (filter = Filter.ALL) => {
 const showStats = () => {
   statsContainer.classList.remove(`visually-hidden`);
   filmsContainer.classList.add(`visually-hidden`);
-  stat.update(storage.get());
+  stat.update(filterFilmsByPeriod(storage.get(), stat.checkedPeriodInput.id));
 
-  const statFilters = [...statsContainer.querySelectorAll(`.statistic__filters-input`)];
-  statFilters.forEach((filter) =>
-    filter.addEventListener(`click`, (evt) =>
-      stat.update(filterFilmsByPeriod(storage.get(), evt.currentTarget.id))));
+  stat.periodInputs.forEach((filter) =>
+    filter.addEventListener(`click`, (evt) => {
+      stat.update(filterFilmsByPeriod(storage.get(), evt.currentTarget.id));
+    }));
+
 };
 
 const onError = () => {
