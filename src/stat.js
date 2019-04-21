@@ -145,4 +145,4 @@ class Stat extends Component {
   }
 }
 
-export default Stat;
+export {getRank, Stat};

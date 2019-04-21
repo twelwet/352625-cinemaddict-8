@@ -2,6 +2,7 @@ import {api, storage} from "./data-from-server";
 import FilmDetails from "./film-details";
 import {renderFilters} from "./render-filters";
 import {activateFilmsScreen, switchScreen} from './main.js';
+import {header} from './main.js';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
@@ -78,6 +79,7 @@ export const renderFilms = (films, container, Cmpnt) => {
       api.updateFilm({id: film.id, data: film.toRAW()})
         .then(() => {
           storage.update(film);
+          header.updateRank(storage.get());
           renderFilters(storage.get(), filtersContainer, switchScreen);
         }).catch(console.log);
     };
@@ -98,6 +100,7 @@ export const renderFilms = (films, container, Cmpnt) => {
         body.removeChild(filmDetailsComponent.element);
         filmDetailsComponent.unrender();
         storage.update(film);
+        header.updateRank(storage.get());
         renderFilters(storage.get(), filtersContainer, switchScreen);
         const activeFilterName = filtersContainer.querySelector(`.main-navigation__item--active`).attributes[2].value;
         activateFilmsScreen(activeFilterName);

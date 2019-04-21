@@ -4,15 +4,21 @@ import {renderFilms} from "./render-films";
 import {renderFilters} from './render-filters.js';
 import {Filter, filterFilms} from './filter-films.js';
 import Films from './films.js';
-import Stat from './stat.js';
+import {Stat} from './stat.js';
 import {api, storage} from './data-from-server.js';
 import LoadMessage from './load-message.js';
 import filterFilmsByPeriod from './filter-films-by-period.js';
 import Film from './film';
 import {getTopRated, getMostCommented, FilmExtra} from './film-extra.js';
+import Header from './header.js';
 
 const body = document.querySelector(`body`);
 const main = body.querySelector(`main`);
+
+const header = new Header();
+const headerInner = header.element;
+body.insertBefore(headerInner, main);
+
 const filtersContainer = body.querySelector(`.main-navigation`);
 
 const films = new Films();
@@ -73,6 +79,7 @@ body.insertAdjacentElement(`afterbegin`, loadMessage.element);
 
 api.getFilms().then((downloadedFilms) => {
   storage.set(downloadedFilms);
+  header.updateRank(storage.get());
   body.querySelector(`.footer__statistics`).innerHTML = `${storage.get().length} movies inside`;
   body.removeChild(loadMessage.element);
   loadMessage.unrender();
@@ -82,4 +89,4 @@ api.getFilms().then((downloadedFilms) => {
   renderFilms(getMostCommented(storage.get(), 2), mostCommentedContainer, FilmExtra);
 }).catch(onError);
 
-export {activateFilmsScreen, switchScreen};
+export {header, activateFilmsScreen, switchScreen};
