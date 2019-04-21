@@ -73,6 +73,7 @@ body.insertAdjacentElement(`afterbegin`, loadMessage.element);
 
 api.getFilms().then((downloadedFilms) => {
   storage.set(downloadedFilms);
+  body.querySelector(`.footer__statistics`).innerHTML = `${storage.get().length} movies inside`;
   body.removeChild(loadMessage.element);
   loadMessage.unrender();
   renderFilters(storage.get(), filtersContainer, switchScreen);
