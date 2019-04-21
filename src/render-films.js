@@ -53,6 +53,9 @@ export const renderFilms = (films, container, Cmpnt) => {
     const filmDetailsComponent = new FilmDetails(film);
 
     filmComponent.onComments = () => {
+      if (body.querySelector(`.film-details`)) {
+        body.removeChild(body.querySelector(`.film-details`));
+      }
       filmDetailsComponent.update(film);
       filmDetailsComponent.render();
       filmDetailsComponent.activateRatingControls();
