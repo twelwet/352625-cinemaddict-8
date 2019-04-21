@@ -98,6 +98,9 @@ class FilmDetails extends Component {
   _onCloseButtonClick() {
     const newData = this._getFormData();
 
+    newData.rating.total = this._rating.total;
+    newData.rating.age = this._rating.age;
+
     if (typeof this._onClose === `function`) {
       this._onClose(newData);
     }

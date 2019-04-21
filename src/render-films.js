@@ -92,7 +92,6 @@ export const renderFilms = (films, container, Cmpnt) => {
     };
 
     filmDetailsComponent.onClose = (newObject) => {
-      // FIXME Object.assign затирает вложенные свойства film.rating.total и film.rating.age, как быть?
       Object.assign(film, newObject);
       updateWatchingDate(film);
       updateFilmData(film, filmDetailsComponent).then(() => {
@@ -102,7 +101,6 @@ export const renderFilms = (films, container, Cmpnt) => {
         renderFilters(storage.get(), filtersContainer, switchScreen);
         const activeFilterName = filtersContainer.querySelector(`.main-navigation__item--active`).attributes[2].value;
         activateFilmsScreen(activeFilterName);
-        console.log(film.comments);
       });
     };
 
