@@ -53,6 +53,7 @@ export const renderFilms = (films, container, Cmpnt) => {
     const filmDetailsComponent = new FilmDetails(film);
 
     filmComponent.onComments = () => {
+      filmDetailsComponent.element.querySelector(`.film-details__close-btn`).focus();
       filmDetailsComponent.update(film);
       filmDetailsComponent.render();
       filmDetailsComponent.activateRatingControls();
