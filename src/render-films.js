@@ -55,6 +55,7 @@ export const renderFilms = (films, container, Cmpnt) => {
     filmComponent.onComments = () => {
       filmDetailsComponent.update(film);
       filmDetailsComponent.render();
+      filmDetailsComponent.activateRatingControls();
       body.appendChild(filmDetailsComponent.element);
     };
 
@@ -97,6 +98,7 @@ export const renderFilms = (films, container, Cmpnt) => {
         renderFilters(storage.get(), filtersContainer, switchScreen);
         const activeFilterName = filtersContainer.querySelector(`.main-navigation__item--active`).attributes[2].value;
         activateFilmsScreen(activeFilterName);
+        console.log(film.comments);
       });
     };
 
@@ -118,6 +120,8 @@ export const renderFilms = (films, container, Cmpnt) => {
       filmDetailsComponent.blockCommentField();
       updateFilmData(film, filmDetailsComponent);
     };
+
+    // filmDetailsComponent.onUndo = () => {}
 
     container.appendChild(filmComponent.render());
   }

@@ -4,6 +4,8 @@ import Component from './component.js';
 import {filmDetailsTemplate, EMOJI} from './film-details-template.js';
 import moment from 'moment';
 
+const userName = `User`;
+
 class FilmDetails extends Component {
   constructor(data) {
     super();
@@ -44,6 +46,9 @@ class FilmDetails extends Component {
 
     this._onUserEmojiClick = this._onUserEmojiClick.bind(this);
     this._onEmojiClick = this._onEmojiClick.bind(this);
+
+    this._onUndo = null;
+    this._onUndoClick = this._onUndoClick.bind(this);
   }
 
   _getFormData() {
@@ -57,12 +62,23 @@ class FilmDetails extends Component {
     }
   }
 
+  _onUndoClick() {
+    if (this._yourCommentsNodes.length > 0) {
+      const lastComment = this._yourCommentsNodes.pop();
+      this._commentsNodesParent.removeChild(lastComment);
+      this._comments.pop();
+      this._commentStatus.textContent = `Comment deleted`;
+    }
+
+    this.activateRatingControls();
+  }
+
   _onCtrlEnterPress(evt) {
     if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
       const newData = this._getFormData();
 
       newData.newComment.emotion = this._getCommentEmotion();
-      newData.newComment.author = `User`;
+      newData.newComment.author = userName;
       newData.newComment.date = Date.now();
 
       if (typeof this._onCtrlEnter === `function`) {
@@ -71,6 +87,11 @@ class FilmDetails extends Component {
 
       this.update(newData);
 
+      if (this._yourCommentsNodes.length >= 0) {
+        this._commentStatus.textContent = `Comment added`;
+      }
+
+      this.activateRatingControls();
     }
   }
 
@@ -145,6 +166,48 @@ class FilmDetails extends Component {
     this._onCtrlEnter = fn;
   }
 
+  get _ratingControls() {
+    return this._element.querySelector(`.film-details__user-rating-controls`);
+  }
+
+  get _commentStatus() {
+    return this._ratingControls.querySelector(`.film-details__watched-status`);
+  }
+
+  _showRatingControls() {
+    this._ratingControls.classList.remove(`visually-hidden`);
+  }
+
+  _hideRatingControls() {
+    this._ratingControls.classList.add(`visually-hidden`);
+  }
+
+  activateRatingControls() {
+    switch (this._yourComments.length > 0) {
+      case true:
+        this._showRatingControls();
+        break;
+      default:
+        this._hideRatingControls();
+    }
+  }
+
+  get _commentsNodesParent() {
+    return this._element.querySelector(`.film-details__comments-list`);
+  }
+
+  get _commentsNodes() {
+    return [...this._commentsNodesParent.querySelectorAll(`.film-details__comment`)];
+  }
+
+  get _yourComments() {
+    return this._comments.filter((comment) => comment.author === userName);
+  }
+
+  get _yourCommentsNodes() {
+    return this._commentsNodes.filter((node) => node.children[1].querySelector(`.film-details__comment-author`).textContent === userName);
+  }
+
   get template() { // TODO давай шаблон поделим на части
     return filmDetailsTemplate(this);
   }
@@ -167,6 +230,7 @@ class FilmDetails extends Component {
     document.addEventListener(`keydown`, this._onCtrlEnterPress);
     this._element.querySelector(`.film-details__add-emoji`).addEventListener(`click`, this._onUserEmojiClick);
     this.inputs.forEach((radio) => radio.addEventListener(`change`, this._onUserRatingClick));
+    this._element.querySelector(`.film-details__watched-reset`).addEventListener(`click`, this._onUndoClick);
   }
 
   unbind() {
@@ -175,6 +239,7 @@ class FilmDetails extends Component {
     document.removeEventListener(`keydown`, this._onCtrlEnterPress);
     this._element.querySelector(`.film-details__add-emoji`).removeEventListener(`click`, this._onUserEmojiClick);
     this.inputs.forEach((radio) => radio.removeEventListener(`change`, this._onUserRatingClick));
+    this._element.querySelector(`.film-details__watched-reset`).removeEventListener(`click`, this._onUndoClick);
   }
 
   update(data) {
