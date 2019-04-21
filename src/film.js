@@ -84,7 +84,7 @@ class Film extends Component {
     return `
     <article class="film-card ${this._extra ? `film-card--no-controls` : ``}">
       <h3 class="film-card__title">${this._title}</h3>
-      <p class="film-card__rating">${this._rating.total}</p>
+      <p class="film-card__rating">${this._rating.total.toFixed(1)}</p>
       <p class="film-card__info">
         <span class="film-card__year">${moment(this._date).format(`YYYY`)}</span>
         <span class="film-card__duration">

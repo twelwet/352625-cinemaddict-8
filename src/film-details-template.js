@@ -29,7 +29,7 @@ const filmDetailsTemplate = (data) => `
           </div>
 
           <div class="film-details__rating">
-            <p class="film-details__total-rating">${data._rating.total}</p>
+            <p class="film-details__total-rating">${data._rating.total.toFixed(1)}</p>
             <p class="film-details__user-rating">Your rate ${data._rating.user}</p>
           </div>
         </div>
