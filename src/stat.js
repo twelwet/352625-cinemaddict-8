@@ -25,7 +25,7 @@ const getStat = (films) => {
   const quantites = names.map((genre) => bunch.filter((it) => it === genre).length);
   const youWatched = watchedFilms.length;
   const totalDuration = [].concat(...watchedFilms.map((film) => film.duration)).reduce((acc, duration) => acc + duration, 0);
-  const topGenre = names[quantites.indexOf(Math.max(...quantites))];
+  const topGenre = names[quantites.indexOf(Math.max(...quantites))] === undefined ? `Unknown Genre` : names[quantites.indexOf(Math.max(...quantites))];
   return {names, quantites, youWatched, totalDuration, topGenre};
 };
 
