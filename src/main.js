@@ -18,11 +18,32 @@ const main = body.querySelector(`main`);
 const header = new Header();
 const headerInner = header.element;
 body.insertBefore(headerInner, main);
+
 header.onSearch = (value) => {
   renderFilms(storage.get().filter(({title}) => title.toUpperCase().includes(value.toUpperCase())), allFilmsContainer, Film);
 };
 
 const filtersContainer = body.querySelector(`.main-navigation`);
+
+const markFilter = (name) => {
+  const filtersNodes = [...filtersContainer.querySelectorAll(`.main-navigation__item`)];
+
+  filtersNodes.forEach((node) => {
+    switch (node.attributes[2].nodeValue) {
+      case name:
+        node.classList.add(`main-navigation__item--active`);
+        break;
+      default:
+        node.classList.remove(`main-navigation__item--active`);
+    }
+  });
+};
+
+header.onSearchFocus = () => {
+  markFilter(`All movies`);
+  films.element.querySelector(`.films-list__show-more`).classList.add(`visually-hidden`);
+  renderFilms(filterFilms(storage.get(), `All movies`), allFilmsContainer, Film);
+};
 
 const films = new Films();
 const filmsContainer = films.element;

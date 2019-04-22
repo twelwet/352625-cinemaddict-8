@@ -10,6 +10,7 @@ class Header extends Component {
     this._onSearchInput = this._onSearchInput.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
     this._onEnterPress = this._onEnterPress.bind(this);
+    this._onSearchFocusClick = this._onSearchFocusClick.bind(this);
   }
 
   get template() {
@@ -35,6 +36,10 @@ class Header extends Component {
     this._onSearch = fn;
   }
 
+  set onSearchFocus(fn) {
+    this._onSearchFocus = fn;
+  }
+
   _onEnterPress(e) {
     if (e.keyCode === 13) {
       e.preventDefault();
@@ -54,6 +59,12 @@ class Header extends Component {
     }
   }
 
+  _onSearchFocusClick(e) {
+    if (typeof this._onSearchFocus === `function`) {
+      this._onSearchFocus(e);
+    }
+  }
+
   updateRank(data) {
     this._element.querySelector(`.profile__rating`).innerHTML = getRank(data);
   }
@@ -63,11 +74,13 @@ class Header extends Component {
   }
 
   bind() {
+    this._searchField.addEventListener(`focus`, this._onSearchFocusClick);
     this._searchField.addEventListener(`input`, this._onSearchInput);
     this._searchField.addEventListener(`keydown`, this._onEscPress);
     this._searchField.addEventListener(`keydown`, this._onEnterPress);
   }
   unbind() {
+    this._searchField.removeEventListener(`focus`, this._onSearchFocusClick);
     this._searchField.removeEventListener(`input`, this._onSearchInput);
     this._searchField.removeEventListener(`keydown`, this._onEscPress);
     this._searchField.removeEventListener(`keydown`, this._onEnterPress);
