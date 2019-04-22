@@ -8,6 +8,7 @@ class Header extends Component {
     super();
     this._rank = ``;
     this._onSearchInput = this._onSearchInput.bind(this);
+    this._onEscPress = this._onEscPress.bind(this);
   }
 
   get template() {
@@ -33,6 +34,13 @@ class Header extends Component {
     this._onSearch = fn;
   }
 
+  _onEscPress(e) {
+    if (e.keyCode === 27) {
+      this.clearSearch();
+    }
+    this._onSearchInput(e);
+  }
+
   _onSearchInput(e) {
     if (typeof this._onSearch === `function`) {
       this._onSearch(e.target.value);
@@ -49,9 +57,11 @@ class Header extends Component {
 
   bind() {
     this._searchField.addEventListener(`input`, this._onSearchInput);
+    this._searchField.addEventListener(`keydown`, this._onEscPress);
   }
   unbind() {
     this._searchField.removeEventListener(`input`, this._onSearchInput);
+    this._searchField.removeEventListener(`keydown`, this._onEscPress);
   }
 }
 
