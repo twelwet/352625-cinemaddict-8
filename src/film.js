@@ -64,6 +64,15 @@ class Film extends Component {
     }
   }
 
+  _getHmmFromDuration() {
+    const h = moment.duration(this._duration, `minutes`).hours();
+    let mm = moment.duration(this._duration, `minutes`).minutes();
+    if (mm >= 0 && mm < 10) {
+      mm = `0${mm}`;
+    }
+    return `${h} : ${mm}`;
+  }
+
   set onComments(fn) {
     this._onComments = fn;
   }
@@ -88,10 +97,9 @@ class Film extends Component {
       <p class="film-card__info">
         <span class="film-card__year">${moment(this._date).format(`YYYY`)}</span>
         <span class="film-card__duration">
-          ${moment.duration(this._duration, `minutes`).hours()} :
-          ${moment.duration(this._duration, `minutes`).minutes()}
+          ${this._getHmmFromDuration()}
         </span>
-        <span class="film-card__genre">${this._genres[0]}</span>
+        <span class="film-card__genre">${this._genres[0] === undefined ? `Unknown Genre` : this._genres[0]}</span>
       </p>
       <img src="${this._poster}" alt="" class="film-card__poster">
       <p class="film-card__description ${this._extra ? `visually-hidden` : ``}">${this._description}</p>
