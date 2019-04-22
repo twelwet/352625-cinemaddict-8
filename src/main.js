@@ -1,100 +1,117 @@
 // main.js
 
-import downloaded from './mock-data.js';
-import Film from './film.js';
-import FilmDetails from './film-details.js';
-import Filter from './filter.js';
-import {showFilms, hideFilms, showStat, hideStat, activateStat} from './stat.js';
+import {renderFilms} from "./render-films";
+import {renderFilters} from './render-filters.js';
+import {Filter, filterFilms} from './filter-films.js';
+import Films from './films.js';
+import {Stat} from './stat.js';
+import {api, storage} from './data-from-server.js';
+import LoadMessage from './load-message.js';
+import filterFilmsByPeriod from './filter-films-by-period.js';
+import Film from './film';
+import {getTopRated, getMostCommented, FilmExtra} from './film-extra.js';
+import Header from './header.js';
 
-const filtersContainer = document.querySelector(`.main-navigation`);
-const allFilmsContainer = document.querySelector(`.films-list .films-list__container`);
 const body = document.querySelector(`body`);
+const main = body.querySelector(`main`);
 
-const filters = downloaded.filters.map((item) => {
-  return new Filter(item);
-});
+const header = new Header();
+const headerInner = header.element;
+body.insertBefore(headerInner, main);
 
-filters.forEach((item) => filtersContainer.appendChild(item.render()));
+header.onSearch = (value) => {
+  renderFilms(storage.get().filter(({title}) => title.toUpperCase().includes(value.toUpperCase())), allFilmsContainer, Film);
+};
 
-const filterFilms = (films, filterName) => {
-  switch (filterName) {
+const filtersContainer = body.querySelector(`.main-navigation`);
 
-    case `All movies`: // TODO такое лучше в константы перенести
-      return films;
+const markFilter = (name) => {
+  const filtersNodes = [...filtersContainer.querySelectorAll(`.main-navigation__item`)];
 
-    case `Watchlist`:
-      return films.filter((it) => it.isOnWatchList === true);
+  filtersNodes.forEach((node) => {
+    switch (node.attributes[2].nodeValue) {
+      case name:
+        node.classList.add(`main-navigation__item--active`);
+        break;
+      default:
+        node.classList.remove(`main-navigation__item--active`);
+    }
+  });
+};
 
-    case `History`:
-      return films.filter((it) => it.isWatched === true);
+header.onSearchFocus = () => {
+  markFilter(`All movies`);
+  films.element.querySelector(`.films-list__show-more`).classList.add(`visually-hidden`);
+  renderFilms(filterFilms(storage.get(), `All movies`), allFilmsContainer, Film);
+};
 
-    case `Favorites`:
-      return films.filter((it) => it.isFavorite === true);
+const films = new Films();
+const filmsContainer = films.element;
+main.appendChild(filmsContainer);
+const allFilmsContainer = filmsContainer.querySelector(`.films-list .films-list__container`);
+const topRatedContainer = filmsContainer.querySelectorAll(`.films-list--extra .films-list__container`)[0];
+const mostCommentedContainer = filmsContainer.querySelectorAll(`.films-list--extra .films-list__container`)[1];
 
-    case `Stats`:
-      return [];
+const stat = new Stat(storage.get());
+const statsContainer = stat.element;
+stat.create();
+main.appendChild(statsContainer);
 
-    default:
-      throw new Error(`Unknown filter name`);
+films.onShowMore = () => films.showNext(5);
+
+const activateFilmsScreen = (filter) => {
+  renderFilms(filterFilms(storage.get(), filter), allFilmsContainer, Film);
+  films.activateShowMore(5);
+  renderFilms(getMostCommented(storage.get(), 2), mostCommentedContainer, FilmExtra);
+};
+
+const showFilms = (filter = Filter.ALL) => {
+  filmsContainer.classList.remove(`visually-hidden`);
+  statsContainer.classList.add(`visually-hidden`);
+  activateFilmsScreen(filter);
+};
+
+const showStats = () => {
+  statsContainer.classList.remove(`visually-hidden`);
+  filmsContainer.classList.add(`visually-hidden`);
+  stat.updateRank(storage.get());
+  stat.update(filterFilmsByPeriod(storage.get(), stat.checkedPeriodInput.id));
+
+  stat.periodInputs.forEach((filter) =>
+    filter.addEventListener(`click`, (evt) =>
+      stat.update(filterFilmsByPeriod(storage.get(), evt.currentTarget.id))));
+
+};
+
+const onError = () => {
+  const node = document.createElement(`div`);
+  node.style = `width: auto; margin: 0 auto; text-align: center; background-color: red; font-size: 20px`;
+
+  node.textContent = `Something went wrong while loading movies. Check your connection or try again later`;
+  body.insertAdjacentElement(`afterbegin`, node);
+};
+const switchScreen = (name) => {
+  header.clearSearch();
+  if (name === Filter.STATS) {
+    showStats();
+  } else {
+    showFilms(name);
   }
 };
 
-filtersContainer.onclick = (evt) => {
-  const filterName = evt.target.value;
-  switch (filterName) {
-    case `Stats`:
-      hideFilms();
-      showStat();
-      activateStat();
-      break;
-    default:
-      showFilms();
-      hideStat();
-      const filteredFilms = filterFilms(downloaded.films.all, filterName);
-      renderFilms(filteredFilms);
-  }
-};
+const loadMessage = new LoadMessage();
+body.insertAdjacentElement(`afterbegin`, loadMessage.element);
 
-const renderFilms = (films) => {
-  allFilmsContainer.innerHTML = ``;
+api.getFilms().then((downloadedFilms) => {
+  storage.set(downloadedFilms);
+  header.updateRank(storage.get());
+  body.querySelector(`.footer__statistics`).innerHTML = `${storage.get().length} movies inside`;
+  body.removeChild(loadMessage.element);
+  loadMessage.unrender();
+  renderFilters(storage.get(), filtersContainer, switchScreen);
+  showFilms();
+  renderFilms(getTopRated(storage.get(), 2), topRatedContainer, FilmExtra);
+  renderFilms(getMostCommented(storage.get(), 2), mostCommentedContainer, FilmExtra);
+}).catch(onError);
 
-  for (const film of films) {
-    const filmComponent = new Film(film);
-    const filmDetailsComponent = new FilmDetails(film);
-
-    filmComponent.onComments = () => {
-      filmDetailsComponent.render();
-      body.appendChild(filmDetailsComponent.element);
-    };
-
-    filmComponent.onAddToWatchList = () => {
-      film.isOnWatchList = !film.isOnWatchList;
-      filmDetailsComponent.update(film);
-    };
-
-    filmComponent.onMarkAsWatched = () => {
-      film.isWatched = !film.isWatched;
-      filmDetailsComponent.update(film);
-    };
-
-    filmComponent.onMarkAsFavorite = () => {
-      film.isFavorite = !film.isFavorite;
-      filmDetailsComponent.update(film);
-    };
-
-    filmDetailsComponent.onClose = (newObject) => {
-      // TODO посмотри на Object.assign
-      film.rating.user = newObject.rating.user;
-      film.isOnWatchList = newObject.isOnWatchList;
-      film.isWatched = newObject.isWatched;
-      film.isFavorite = newObject.isFavorite;
-      filmDetailsComponent.update(film);
-      body.removeChild(filmDetailsComponent.element);
-      filmDetailsComponent.unrender();
-    };
-
-    allFilmsContainer.appendChild(filmComponent.render());
-  }
-};
-
-renderFilms(downloaded.films.all);
+export {header, activateFilmsScreen, switchScreen, onError};

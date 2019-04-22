@@ -12,7 +12,7 @@ class Component {
   }
 
   get element() {
-    return this._element;
+    return this._element || this.render();
   }
 
   get template() {
