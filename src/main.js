@@ -93,4 +93,4 @@ api.getFilms().then((downloadedFilms) => {
   renderFilms(getMostCommented(storage.get(), 2), mostCommentedContainer, FilmExtra);
 }).catch(onError);
 
-export {header, activateFilmsScreen, switchScreen};
+export {header, activateFilmsScreen, switchScreen, onError};

@@ -1,6 +1,7 @@
 // api.js
 
 import ModelFilm from './model-film.js';
+import {onError} from './main.js';
 
 const Method = {
   GET: `GET`,
@@ -60,10 +61,7 @@ const API = class {
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
       .then(checkStatus)
-      .catch((err) => {
-        console.error(`fetch error: ${err}`);
-        throw err;
-      });
+      .catch(onError);
   }
 };
 

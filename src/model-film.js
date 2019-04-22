@@ -1,5 +1,31 @@
 // model-film.js
 
+const ServerFields = {
+  ID: `id`,
+  COMMENTS: `comments`,
+  FILM_INFO: `film_info`,
+  ACTORS: `actors`,
+  AGE_RATING: `age_rating`,
+  ALTERNATIVE_TITLE: `alternative_title`,
+  DESCRIPTION: `description`,
+  DIRECTOR: `director`,
+  GENRE: `genre`,
+  POSTER: `poster`,
+  RELEASE: `release`,
+  DATE: `date`,
+  RELEASE_COUNTRY: `release_country`,
+  RUNTIME: `runtime`,
+  TITLE: `title`,
+  TOTAL_RATING: `total_rating`,
+  WRITERS: `writers`,
+  USER_DETAILS: `user_details`,
+  ALREADY_WATCHED: `already_watched`,
+  FAVORITE: `favorite`,
+  PERSONAL_RATING: `personal_rating`,
+  WATCHING_DATE: `watching_date`,
+  WATCHLIST: `watchlist`
+};
+
 class ModelFilm {
   constructor(data) {
     this.id = parseInt(data.id, 10);
@@ -34,31 +60,36 @@ class ModelFilm {
 
   toRAW() {
     return {
-      id: String(this.id),
-      comments: this.comments,
-      film_info: {
-        actors: this.actors,
-        age_rating: this.rating.age,
-        alternative_title: this.altTitle,
-        description: this.description,
-        director: this.director,
-        genre: this.genres,
-        poster: this.poster,
-        release: {
-          date: this.date,
-          release_country: this.country
+      [ServerFields.ID]: String(this.id),
+      [ServerFields.COMMENTS]: this.comments,
+
+      [ServerFields.FILM_INFO]: {
+
+        [ServerFields.ACTORS]: this.actors,
+        [ServerFields.AGE_RATING]: this.rating.age,
+        [ServerFields.ALTERNATIVE_TITLE]: this.altTitle,
+        [ServerFields.DESCRIPTION]: this.description,
+        [ServerFields.DIRECTOR]: this.director,
+        [ServerFields.GENRE]: this.genres,
+        [ServerFields.POSTER]: this.poster,
+
+        [ServerFields.RELEASE]: {
+          [ServerFields.DATE]: this.date,
+          [ServerFields.RELEASE_COUNTRY]: this.country
         },
-        runtime: this.duration,
-        title: this.title,
-        total_rating: this.rating.total,
-        writers: this.writers
+
+        [ServerFields.RUNTIME]: this.duration,
+        [ServerFields.TITLE]: this.title,
+        [ServerFields.TOTAL_RATING]: this.rating.total,
+        [ServerFields.WRITERS]: this.writers
       },
-      user_details: {
-        already_watched: this.isWatched,
-        favorite: this.isFavorite,
-        personal_rating: this.rating.user,
-        watching_date: this.watchingDate,
-        watchlist: this.isOnWatchList
+
+      [ServerFields.USER_DETAILS]: {
+        [ServerFields.ALREADY_WATCHED]: this.isWatched,
+        [ServerFields.FAVORITE]: this.isFavorite,
+        [ServerFields.PERSONAL_RATING]: this.rating.user,
+        [ServerFields.WATCHING_DATE]: this.watchingDate,
+        [ServerFields.WATCHLIST]: this.isOnWatchList
       }
     };
   }

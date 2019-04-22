@@ -2,7 +2,7 @@ import {api, storage} from "./data-from-server";
 import FilmDetails from "./film-details";
 import {renderFilters} from "./render-filters";
 import {activateFilmsScreen, switchScreen} from './main.js';
-import {header} from './main.js';
+import {header, onError} from './main.js';
 
 const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
@@ -69,7 +69,7 @@ export const renderFilms = (films, container, Cmpnt) => {
         .then(() => {
           storage.update(film);
           renderFilters(storage.get(), filtersContainer, switchScreen);
-        }).catch(console.log);
+        }).catch(onError);
     };
 
     filmComponent.onMarkAsWatched = () => {
@@ -80,7 +80,7 @@ export const renderFilms = (films, container, Cmpnt) => {
           storage.update(film);
           header.updateRank(storage.get());
           renderFilters(storage.get(), filtersContainer, switchScreen);
-        }).catch(console.log);
+        }).catch(onError);
     };
 
     filmComponent.onMarkAsFavorite = () => {
@@ -89,7 +89,7 @@ export const renderFilms = (films, container, Cmpnt) => {
         .then(() => {
           storage.update(film);
           renderFilters(storage.get(), filtersContainer, switchScreen);
-        }).catch(console.log);
+        }).catch(onError);
     };
 
     filmDetailsComponent.onClose = (newObject) => {
@@ -124,8 +124,6 @@ export const renderFilms = (films, container, Cmpnt) => {
       filmDetailsComponent.blockCommentField();
       updateFilmData(film, filmDetailsComponent);
     };
-
-    // filmDetailsComponent.onUndo = () => {}
 
     container.appendChild(filmComponent.render());
   }
