@@ -9,6 +9,7 @@ class Header extends Component {
     this._rank = ``;
     this._onSearchInput = this._onSearchInput.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
+    this._onEnterPress = this._onEnterPress.bind(this);
   }
 
   get template() {
@@ -32,6 +33,12 @@ class Header extends Component {
 
   set onSearch(fn) {
     this._onSearch = fn;
+  }
+
+  _onEnterPress(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+    }
   }
 
   _onEscPress(e) {
@@ -58,10 +65,12 @@ class Header extends Component {
   bind() {
     this._searchField.addEventListener(`input`, this._onSearchInput);
     this._searchField.addEventListener(`keydown`, this._onEscPress);
+    this._searchField.addEventListener(`keydown`, this._onEnterPress);
   }
   unbind() {
     this._searchField.removeEventListener(`input`, this._onSearchInput);
     this._searchField.removeEventListener(`keydown`, this._onEscPress);
+    this._searchField.removeEventListener(`keydown`, this._onEnterPress);
   }
 }
 
