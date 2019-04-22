@@ -18,6 +18,9 @@ const main = body.querySelector(`main`);
 const header = new Header();
 const headerInner = header.element;
 body.insertBefore(headerInner, main);
+header.onSearch = (value) => {
+  renderFilms(storage.get().filter(({title}) => title.toUpperCase().includes(value.toUpperCase())), allFilmsContainer, Film);
+};
 
 const filtersContainer = body.querySelector(`.main-navigation`);
 
@@ -67,6 +70,7 @@ const onError = () => {
   body.insertAdjacentElement(`afterbegin`, node);
 };
 const switchScreen = (name) => {
+  header.clearSearch();
   if (name === Filter.STATS) {
     showStats();
   } else {

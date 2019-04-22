@@ -7,6 +7,7 @@ class Header extends Component {
   constructor() {
     super();
     this._rank = ``;
+    this._onSearchInput = this._onSearchInput.bind(this);
   }
 
   get template() {
@@ -24,8 +25,33 @@ class Header extends Component {
     `.trim();
   }
 
+  get _searchField() {
+    return this._element.querySelector(`.search__field`);
+  }
+
+  set onSearch(fn) {
+    this._onSearch = fn;
+  }
+
+  _onSearchInput(e) {
+    if (typeof this._onSearch === `function`) {
+      this._onSearch(e.target.value);
+    }
+  }
+
   updateRank(data) {
     this._element.querySelector(`.profile__rating`).innerHTML = getRank(data);
+  }
+
+  clearSearch() {
+    this._searchField.value = ``;
+  }
+
+  bind() {
+    this._searchField.addEventListener(`input`, this._onSearchInput);
+  }
+  unbind() {
+    this._searchField.removeEventListener(`input`, this._onSearchInput);
   }
 }
 
