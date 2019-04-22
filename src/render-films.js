@@ -27,7 +27,6 @@ const updateFilmData = (entry, component) => {
       component.unblockCommentField();
 
       component.shake();
-      // FIXME Как отключить повторную анимацию карточки справа-налево?
 
       component.updateCommentColor();
       component.updateLabelColor();

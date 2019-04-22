@@ -215,7 +215,7 @@ class FilmDetails extends Component {
     return filmDetailsTemplate(this);
   }
 
-  get inputs() { // TODO такое лучше тернарным описать
+  get inputs() {
     return this.element === null
       ? []
       : [...this._element.querySelectorAll(`.film-details__user-rating-input`)];

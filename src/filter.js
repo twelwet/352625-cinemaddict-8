@@ -35,7 +35,6 @@ class Filter extends Component {
   }
 
   _onElementClick(e) {
-    // this.element.classList.add(`main-navigation__item--active`);
     if (typeof this._onClick === `function`) {
       e.preventDefault();
       this._onClick(this._name);

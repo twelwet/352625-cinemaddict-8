@@ -12,7 +12,7 @@ const filterFilms = (films, filterName) => {
 
   switch (filterName) {
 
-    case Filter.ALL: // TODO такое лучше в константы перенести
+    case Filter.ALL:
       return films;
 
     case Filter.WATCHLIST:
