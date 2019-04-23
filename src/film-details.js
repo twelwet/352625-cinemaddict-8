@@ -79,6 +79,10 @@ class FilmDetails extends Component {
       : [...this._element.querySelectorAll(`.film-details__user-rating-label`)];
   }
 
+  get closeButton() {
+    return this._element.querySelector(`.film-details__close-btn`);
+  }
+
   get _ratingControls() {
     return this._element.querySelector(`.film-details__user-rating-controls`);
   }
