@@ -42,11 +42,13 @@ const filtersData = {
   get all() {
     return this._inner;
   },
+
   updateActiveField(filter) {
     this._inner.forEach((item) => {
       item.active = item === filter;
     });
   }
+
 };
 
 export const renderFilters = (films, container, cb) => {

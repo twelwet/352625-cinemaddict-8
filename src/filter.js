@@ -12,6 +12,10 @@ class Filter extends Component {
     this._onElementClick = this._onElementClick.bind(this);
   }
 
+  set onClick(fn) {
+    this._onClick = fn;
+  }
+
   get template() {
     return `
       <a href="${this._link}" class="main-navigation__item
@@ -24,14 +28,9 @@ class Filter extends Component {
   }
 
   getCount(data, films) {
-    if (data.filmFlag) {
-      return films.filter((film) => film[`${data.filmFlag}`]).length;
-    } else {
-      return ``;
-    }
-  }
-  set onClick(fn) {
-    this._onClick = fn;
+    return data.filmFlag
+      ? films.filter((film) => film[`${data.filmFlag}`]).length
+      : ``;
   }
 
   _onElementClick(e) {
@@ -40,12 +39,15 @@ class Filter extends Component {
       this._onClick(this._name);
     }
   }
+
   bind() {
     this.element.addEventListener(`click`, this._onElementClick);
   }
+
   unbind() {
     this.element.removeEventListener(`click`, this._onElementClick);
   }
+
 }
 
 export default Filter;

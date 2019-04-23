@@ -13,6 +13,14 @@ class Header extends Component {
     this._onSearchFocusClick = this._onSearchFocusClick.bind(this);
   }
 
+  set onSearch(fn) {
+    this._onSearch = fn;
+  }
+
+  set onSearchFocus(fn) {
+    this._onSearchFocus = fn;
+  }
+
   get template() {
     return `
       <header class="header">
@@ -32,12 +40,12 @@ class Header extends Component {
     return this._element.querySelector(`.search__field`);
   }
 
-  set onSearch(fn) {
-    this._onSearch = fn;
+  updateRank(data) {
+    this._element.querySelector(`.profile__rating`).innerHTML = getRank(data);
   }
 
-  set onSearchFocus(fn) {
-    this._onSearchFocus = fn;
+  clearSearch() {
+    this._searchField.value = ``;
   }
 
   _onEnterPress(e) {
@@ -65,14 +73,6 @@ class Header extends Component {
     }
   }
 
-  updateRank(data) {
-    this._element.querySelector(`.profile__rating`).innerHTML = getRank(data);
-  }
-
-  clearSearch() {
-    this._searchField.value = ``;
-  }
-
   bind() {
     this._searchField.addEventListener(`focus`, this._onSearchFocusClick);
     this._searchField.addEventListener(`input`, this._onSearchInput);
@@ -85,6 +85,7 @@ class Header extends Component {
     this._searchField.removeEventListener(`keydown`, this._onEscPress);
     this._searchField.removeEventListener(`keydown`, this._onEnterPress);
   }
+
 }
 
 export default Header;
