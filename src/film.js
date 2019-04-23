@@ -34,45 +34,6 @@ class Film extends Component {
     this._extra = data.extra;
   }
 
-  _onAddToWatchListClick(evt) {
-    evt.preventDefault();
-
-    if (typeof this._onAddToWatchList === `function`) {
-      this._onAddToWatchList();
-    }
-  }
-
-  _onMarkAsWatchedClick(evt) {
-    evt.preventDefault();
-
-    if (typeof this._onMarkAsWatched === `function`) {
-      this._onMarkAsWatched();
-    }
-  }
-
-  _onMarkAsFavoriteClick(evt) {
-    evt.preventDefault();
-
-    if (typeof this._onMarkAsFavorite === `function`) {
-      this._onMarkAsFavorite();
-    }
-  }
-
-  _onCommentsButtonClick() {
-    if (typeof this._onComments === `function`) {
-      this._onComments();
-    }
-  }
-
-  _getHmmFromDuration() {
-    const h = moment.duration(this._duration, `minutes`).hours();
-    let mm = moment.duration(this._duration, `minutes`).minutes();
-    if (mm >= 0 && mm < 10) {
-      mm = `0${mm}`;
-    }
-    return `${h} : ${mm}`;
-  }
-
   set onComments(fn) {
     this._onComments = fn;
   }
@@ -113,6 +74,15 @@ class Film extends Component {
     .trim();
   }
 
+  _getHmmFromDuration() {
+    const h = moment.duration(this._duration, `minutes`).hours();
+    let mm = moment.duration(this._duration, `minutes`).minutes();
+    if (mm >= 0 && mm < 10) {
+      mm = `0${mm}`;
+    }
+    return `${h} : ${mm}`;
+  }
+
   bind() {
     this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, this._onAddToWatchListClick);
     this._element.querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, this._onMarkAsWatchedClick);
@@ -125,6 +95,36 @@ class Film extends Component {
     this._element.querySelector(`.film-card__controls-item--mark-as-watched`).removeEventListener(`click`, this._onMarkAsWatchedClick);
     this._element.querySelector(`.film-card__controls-item--favorite`).removeEventListener(`click`, this._onMarkAsFavoriteClick);
     this._element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onCommentsButtonClick);
+  }
+
+  _onAddToWatchListClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onAddToWatchList === `function`) {
+      this._onAddToWatchList();
+    }
+  }
+
+  _onMarkAsWatchedClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onMarkAsWatched === `function`) {
+      this._onMarkAsWatched();
+    }
+  }
+
+  _onMarkAsFavoriteClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onMarkAsFavorite === `function`) {
+      this._onMarkAsFavorite();
+    }
+  }
+
+  _onCommentsButtonClick() {
+    if (typeof this._onComments === `function`) {
+      this._onComments();
+    }
   }
 
 }

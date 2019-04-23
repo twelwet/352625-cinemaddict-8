@@ -39,8 +39,30 @@ class Stat extends Component {
     this._topGenre = getStat(data).topGenre;
   }
 
-  _ctx() {
-    return this._element.querySelector(`.statistic__chart`);
+  get template() {
+    return `
+      <section class="statistic visually-hidden">
+
+        ${this._rankTemplate}
+
+        ${this._periodFiltersTemplate}
+
+        ${this._statTemplate}
+
+        <div class="statistic__chart-wrap">
+          <canvas class="statistic__chart" width="1000"></canvas>
+        </div>
+
+      </section>
+    `.trim();
+  }
+
+  get periodInputs() {
+    return [...this._element.querySelectorAll(`.statistic__filters-input`)];
+  }
+
+  get checkedPeriodInput() {
+    return this.periodInputs.filter((input) => input.checked)[0];
   }
 
   get _periodFiltersTemplate() {
@@ -94,32 +116,6 @@ class Stat extends Component {
     `.trim();
   }
 
-  get template() {
-    return `
-      <section class="statistic visually-hidden">
-
-        ${this._rankTemplate}
-
-        ${this._periodFiltersTemplate}
-
-        ${this._statTemplate}
-
-        <div class="statistic__chart-wrap">
-          <canvas class="statistic__chart" width="1000"></canvas>
-        </div>
-
-      </section>
-    `.trim();
-  }
-
-  get periodInputs() {
-    return [...this._element.querySelectorAll(`.statistic__filters-input`)];
-  }
-
-  get checkedPeriodInput() {
-    return this.periodInputs.filter((input) => input.checked)[0];
-  }
-
   create() {
     this._chart = getChart(this._ctx());
   }
@@ -143,6 +139,11 @@ class Stat extends Component {
   updateRank(downloaded) {
     this._rank = getRank(downloaded);
   }
+
+  _ctx() {
+    return this._element.querySelector(`.statistic__chart`);
+  }
+
 }
 
 export {getRank, Stat};

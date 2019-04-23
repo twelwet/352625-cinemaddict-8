@@ -5,39 +5,22 @@ import Component from './component.js';
 class Films extends Component {
   constructor() {
     super();
-
     this._onShowMore = null;
     this._onShowMoreClick = this._onShowMoreClick.bind(this);
   }
 
-  _onShowMoreClick() {
-    if (typeof this._onShowMore === `function`) {
-      this._onShowMore();
-    }
+  set onShowMore(fn) {
+    this._onShowMore = fn;
   }
 
-  _displayShowMoreButton() {
-    this._showMoreButton.classList.remove(`visually-hidden`);
-  }
-
-  _hideShowMoreButton() {
-    this._showMoreButton.classList.add(`visually-hidden`);
-  }
-
-  _hideAll() {
-    this._nodes.forEach((node) => node.classList.add(`visually-hidden`));
-  }
-
-  _show(num) {
-    this._nodes.forEach((node, index) => {
-      if (index < num) {
-        node.classList.remove(`visually-hidden`);
-      }
-    });
-
-    if (this._shownNodes.length === this._nodes.length) {
-      this._hideShowMoreButton();
-    }
+  get template() {
+    return `
+      <section class="films">
+        ${this._allFilmsTemplate}
+        ${this._topRatedTemplate}
+        ${this._mostCommentedTemplate}
+      </section>
+    `.trim();
   }
 
   get _allFilmsTemplate() {
@@ -87,22 +70,40 @@ class Films extends Component {
     return this._element.querySelector(`.films-list__show-more`);
   }
 
-  get template() {
-    return `
-      <section class="films">
-        ${this._allFilmsTemplate}
-        ${this._topRatedTemplate}
-        ${this._mostCommentedTemplate}
-      </section>
-    `.trim();
-  }
-
-  set onShowMore(fn) {
-    this._onShowMore = fn;
+  activateShowMore(num) {
+    this._displayShowMoreButton();
+    this.unbind();
+    this._hideAll();
+    this._show(num);
+    this.bind();
   }
 
   showNext(num) {
     this._show(this._shownNodes.length + num);
+  }
+
+  _displayShowMoreButton() {
+    this._showMoreButton.classList.remove(`visually-hidden`);
+  }
+
+  _hideShowMoreButton() {
+    this._showMoreButton.classList.add(`visually-hidden`);
+  }
+
+  _hideAll() {
+    this._nodes.forEach((node) => node.classList.add(`visually-hidden`));
+  }
+
+  _show(num) {
+    this._nodes.forEach((node, index) => {
+      if (index < num) {
+        node.classList.remove(`visually-hidden`);
+      }
+    });
+
+    if (this._shownNodes.length === this._nodes.length) {
+      this._hideShowMoreButton();
+    }
   }
 
   bind() {
@@ -113,13 +114,12 @@ class Films extends Component {
     this._showMoreButton.removeEventListener(`click`, this._onShowMoreClick);
   }
 
-  activateShowMore(num) {
-    this._displayShowMoreButton();
-    this.unbind();
-    this._hideAll();
-    this._show(num);
-    this.bind();
+  _onShowMoreClick() {
+    if (typeof this._onShowMore === `function`) {
+      this._onShowMore();
+    }
   }
+
 }
 
 export default Films;
