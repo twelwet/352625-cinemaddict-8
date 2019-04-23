@@ -28,11 +28,9 @@ class Filter extends Component {
   }
 
   getCount(data, films) {
-    if (data.filmFlag) {
-      return films.filter((film) => film[`${data.filmFlag}`]).length;
-    } else {
-      return ``;
-    }
+    return data.filmFlag
+      ? films.filter((film) => film[`${data.filmFlag}`]).length
+      : ``;
   }
 
   _onElementClick(e) {
