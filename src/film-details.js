@@ -285,9 +285,7 @@ class FilmDetails extends Component {
 
       this.update(newData);
 
-      if (this._yourCommentsNodes.length >= 0) {
-        this._commentStatus.textContent = `Comment added`;
-      }
+      this._commentStatus.textContent = `Comment added`;
 
       this.activateRatingControls();
     }

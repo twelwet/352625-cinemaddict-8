@@ -126,7 +126,7 @@ const filmDetailsTemplate = (data) => `
 
     <section class="film-details__user-rating-wrap">
       <div class="film-details__user-rating-controls visually-hidden">
-        <span class="film-details__watched-status film-details__watched-status--active">Already watched</span>
+        <span class="film-details__watched-status film-details__watched-status--active"></span>
         <button class="film-details__watched-reset" type="button">undo</button>
       </div>
 
